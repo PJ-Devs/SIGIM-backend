@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -61,6 +62,16 @@ class AuthController extends Controller
                     'enterprise_id' => $enterprise->id,
                     'role_id' => 1,
                 ]);
+
+                foreach ($request->colaborators as $colaborator) {
+                    User::create([
+                        'name' => $colaborator['name'],
+                        'email' => $colaborator['email'],
+                        'password' => Str::password(16),
+                        'enterprise_id' => $enterprise->id,
+                        'role_id' => $colaborator['role'],
+                    ]);
+                }
 
                 return $owner;
             });

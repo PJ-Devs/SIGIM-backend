@@ -31,6 +31,11 @@ class SignUpRequest extends FormRequest
             'owner_email' => 'required|email|unique:users,email',
             'owner_password' => 'required|string|min:8',
 
+            'colaborators' => 'array',
+            'colaborators.*.name' => 'required|string',
+            'colaborators.*.email' => 'required|email|unique:users,email',
+            'colaborators.*.role' => 'required|integer|exists:roles,id|not_in:1',
+
             'device_name' => 'required'
         ];
     }
@@ -59,6 +64,17 @@ class SignUpRequest extends FormRequest
             'owner_password.required' => 'The owner password field is required.',
             'owner_password.string' => 'The owner password field must be a string.',
             'owner_password.min' => 'The owner password field must be at least 8 characters.',
+
+            'colaborators.array' => 'The colaborators field must be an array.',
+            'colaborators.*.name.required' => 'The name field is required.',
+            'colaborators.*.name.string' => 'The name field must be a string.',
+            'colaborators.*.email.required' => 'The email field is required.',
+            'colaborators.*.email.email' => 'The email field must be a valid email address.',
+            'colaborators.*.email.unique' => 'The email field must be unique.',
+            'colaborators.*.role.required' => 'The role field is required.',
+            'colaborators.*.role.number' => 'The role field must be a number.',
+            'colaborators.*.role.exists' => 'The selected role is invalid.',
+            'colaborators.*.role.not_in' => 'The selected role is invalid.',
 
             'device_name.required' => 'The device name field is required.'
         ];
