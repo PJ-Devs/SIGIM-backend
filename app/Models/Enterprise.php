@@ -14,14 +14,13 @@ class Enterprise extends Model
 
   protected $fillable = ["name", "NIT", "email", "phone_number", "currency"];
 
-  public function products():HasMany
+  public function products(): HasMany
   {
     return $this->hasMany(Product::class);
   }
 
-  public function users():HasMany
+  public function users(): HasMany
   {
     return $this->hasMany(User::class);
   }
-
 }

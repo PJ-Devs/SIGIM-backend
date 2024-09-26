@@ -11,7 +11,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,6 +24,7 @@ class LoginRequest extends FormRequest
         return [
             'email' => 'required|email',
             'password' => 'required|string',
+            'device_name' => 'required'
         ];
     }
 
@@ -34,6 +35,7 @@ class LoginRequest extends FormRequest
             'email.email' => 'The email field must be a valid email address.',
             'password.required' => 'The password field is required.',
             'password.string' => 'The password field must be a string.',
+            'device_name.required' => 'The device name field is required.'
         ];
     }
 }
