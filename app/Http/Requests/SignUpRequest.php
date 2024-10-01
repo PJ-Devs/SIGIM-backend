@@ -31,7 +31,7 @@ class SignUpRequest extends FormRequest
             'owner_email' => 'required|email|unique:users,email',
             'owner_password' => 'required|string|min:8',
 
-            'colaborators' => 'array',
+            'colaborators' => 'nullable|array',
             'colaborators.*.name' => 'required|string',
             'colaborators.*.email' => 'required|email|unique:users,email',
             'colaborators.*.role' => 'required|integer|exists:roles,id|not_in:1',
