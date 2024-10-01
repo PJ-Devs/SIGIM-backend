@@ -12,13 +12,9 @@ use App\Http\Controllers\api\{
     RoleController,
     CategoryController,
     ClientController,
-    SupplierController
+    SupplierController,
+    UserController
 };
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
 
 /**
  * AuthController routes
@@ -29,6 +25,19 @@ Route::get('/user', function (Request $request) {
 Route::post('/auth/token', [AuthController::class, 'mobileTokenBasedLogin']);
 Route::post('/auth/signup', [AuthController::class, 'signUp']);
 Route::post('/auth/logout', [AuthController::class, 'logOut']);
+
+/**
+ * User routes
+ * 1. Get profile - GET /profile
+ * 2. Update profile - PUT /profile
+ * 3. index - GET /users
+ * 4. show - GET /users/{id}
+ * 5. store - POST /users
+ * 6. update - PUT /users/{id}
+ * 7. destroy - DELETE /users/{id}
+ */
+Route::get('/profile', [UserController::class, 'showProfile']);
+Route::put('/profile', [UserController::class, 'updateProfile']);
 
 Route::apiResource('products', ProductController::class);
 Route::apiResource('enterprises', EnterpriseController::class);
