@@ -7,8 +7,9 @@ use App\Http\Controllers\helpers\AuthHelper;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LogOutRequest;
 use App\Http\Requests\SignUpRequest;
-
+use App\Mail\InitialColaboratorPasswordMail;
 use App\Models\User;
+use App\Services\MailingService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -16,11 +17,14 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     protected $authHelper;
+    protected $mailingService;
 
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['except' => ['mobileTokenBasedLogin', 'signUp']]);
+
         $this->authHelper = new AuthHelper();
+        $this->mailingService = new MailingService();
     }
 
     /**
@@ -56,7 +60,19 @@ class AuthController extends Controller
     public function signUp(SignUpRequest $request)
     {
         try {
-            [$registered_owner, $colaborators_passwords] = $this->authHelper->processSignUpTransaction($request);
+            [
+                $enterprise,
+                $registered_owner,
+                $colaborators_passwords
+            ] = $this->authHelper->processSignUpTransaction($request);
+
+            foreach ($colaborators_passwords as $colaborator) {
+                $this->mailingService->sendEmail(
+                    $colaborator['user']->email,
+                    new InitialColaboratorPasswordMail($enterprise, $colaborator['user'], $colaborator['password'])
+                );
+            }
+
             $accessToken = $registered_owner->createToken($request->device_name)->plainTextToken;
             $registered_owner->update(['is_first_login' => false]);
 
