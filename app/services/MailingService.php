@@ -20,6 +20,6 @@ class MailingService
    */
   public function sendEmail(string $to, Mailable $mailable): void
   {
-    Mail::to($to)->queue($mailable);
+    Mail::to($to)->send($mailable);
   }
 }
