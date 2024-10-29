@@ -51,9 +51,10 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return response(null, 204);
     }
 
     public function showProfile()
@@ -77,6 +78,16 @@ class UserController extends Controller
 
         return response()->json([
             'data' => UserResource::make($user)
+        ], 200);
+    }
+
+    public function getMyEnterprise()
+    {
+        $user = Auth::user();
+        $enterprise = $user->enterprise;
+
+        return response()->json([
+            'data' => $enterprise
         ], 200);
     }
 }

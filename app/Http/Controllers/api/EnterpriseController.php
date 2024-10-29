@@ -12,7 +12,8 @@ class EnterpriseController extends Controller {
     */
 
     public function index() {
-        //
+        $enterprises = Enterprise::all();
+        return response()->json( [ 'data' => $enterprises ], 200 );
     }
 
     /**
@@ -44,8 +45,8 @@ class EnterpriseController extends Controller {
     * Remove the specified resource from storage.
     */
 
-    public function destroy( Enterprise $product ) {
-        $product->delete();
-        return response( null, 204 );
+    public function destroy( Enterprise $enterprise ) {
+        $enterprise->delete();
+        return response()->json(['deleted' => $enterprise], 204);
     }
 }
