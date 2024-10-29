@@ -28,7 +28,7 @@ return new class extends Migration {
         ->foreignUlid("enterprise_id")
         ->constrained()
         ->onUpdate("cascade")
-        ->onDelete("restrict");
+        ->onDelete("cascade");
       $table
         ->foreignId("category_id")
         ->constrained()

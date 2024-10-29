@@ -36,11 +36,15 @@ Route::post('/auth/logout', [AuthController::class, 'logOut']);
  * 6. update - PUT /users/{id}
  * 7. destroy - DELETE /users/{id}
  */
+Route::apiResource('users', UserController::class);
 Route::get('/profile', [UserController::class, 'showProfile']);
 Route::put('/profile', [UserController::class, 'updateProfile']);
+Route::get('/enterprise', [UserController::class, 'getMyEnterprise']);
 
 Route::apiResource('products', ProductController::class);
+
 Route::apiResource('enterprises', EnterpriseController::class);
+
 Route::apiResource('invoices', InvoiceController::class);
 Route::apiResource('permissions', PermissionController::class);
 Route::apiResource('sales', SaleController::class);
