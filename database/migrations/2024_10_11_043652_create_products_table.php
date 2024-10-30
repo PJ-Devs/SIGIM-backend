@@ -24,6 +24,7 @@ return new class extends Migration {
       $table->string("barcode", length: 100)->nullable();
       $table->integer("minimal_safe_stock")->default(0);
       $table->double("discount")->nullable();
+
       $table
         ->foreignUlid("enterprise_id")
         ->constrained()
