@@ -22,8 +22,8 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum', ['except' => ['mobileTokenBasedLogin', 'signUp']]);
-        $this->middleware('ability:password_reset', ['only' => ['resetPassword']]);
+        $this->middleware('auth:sanctum', ['except' => ['mobileTokenBasedLogin', 'signUp', 'resetPassword']]);
+        // $this->middleware('ability:password_reset', ['only' => ['resetPassword']]);
 
         $this->authHelper = new AuthHelper();
         $this->mailingService = new MailingService();
@@ -124,14 +124,14 @@ class AuthController extends Controller
             ], 500);
         }
 
-        $used_token = $user->tokens()->where('name', "password_reset_{$user->id}")->first();
-        if ($used_token) {
-            $used_token->delete();
-        } else {
-            return response()->json([
-                'message' => 'Password reset token not found or already used.',
-            ], 404);
-        }
+        // $used_token = $user->tokens()->where('name', "password_reset_{$user->id}")->first();
+        // if ($used_token) {
+        //     $used_token->delete();
+        // } else {
+        //     return response()->json([
+        //         'message' => 'Password reset token not found or already used.',
+        //     ], 404);
+        // }
 
         return response()->json([
             'message' => 'Password updated successfully.',
