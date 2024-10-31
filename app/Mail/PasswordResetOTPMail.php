@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Enterprise;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,22 +10,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InitialColaboratorPasswordMail extends Mailable implements ShouldQueue
+class PasswordResetOTPMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public Enterprise $enterprise;
+    public string $token;
     public User $user;
-    public string $password;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Enterprise $enterprise, User $user, string $password)
+    public function __construct(string $token, User $user)
     {
-        $this->enterprise = $enterprise;
+        $this->token = $token;
         $this->user = $user;
-        $this->password = $password;
     }
 
     /**
@@ -34,9 +31,8 @@ class InitialColaboratorPasswordMail extends Mailable implements ShouldQueue
      */
     public function envelope(): Envelope
     {
-        $user_first_name = explode(' ', $this->user->name)[0];
         return new Envelope(
-            subject: "Bienvenido a SIGIM, {$user_first_name}! 🎉",
+            subject: "Solicitud de cambio de contraseña",
         );
     }
 
@@ -46,11 +42,10 @@ class InitialColaboratorPasswordMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            view: 'mail.initial-colaborator-password',
+            view: 'mail.password-reset-otp',
             with: [
-                'enterprise_name' => $this->enterprise->name,
                 'user_name' => explode(' ', $this->user->name)[0],
-                'password' => $this->password,
+                'token' => $this->token,
             ],
         );
     }
