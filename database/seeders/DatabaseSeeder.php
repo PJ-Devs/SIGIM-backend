@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
       "NIT" => "1234567890",
       "email" => "pgosorio13@gmail.com",
       "phone_number" => "nosee",
-      "currency" => "USD"
     ]);
 
     Role::create([
@@ -40,6 +39,15 @@ class DatabaseSeeder extends Seeder
       "name" => "User",
       "description" => "User",
     ]);
+
+    $user = $enterprise->users()->create([
+      "name" => "Pedro Osorio",
+      "email" => "pedroo@gmail.com",
+      "password" => bcrypt("12345678"),
+      "role_id" => 2,
+    ]);
+
+    error_log("Test token: " . $user->createToken("api_token")->plainTextToken);
 
     Category::create([
       "name" => "Telefonos",
@@ -82,7 +90,7 @@ class DatabaseSeeder extends Seeder
       'sale_price' => 999,
       'thumbnail' => 'storage/product_thumbnails/iphone14.jpg',
       'barcode' => '1234567890',
-      'minimal_safe_stock' => 10,
+      'minimal_safe_stock' => 40,
       'discount' => 5,
       'enterprise_id' => $enterprise->id,
       'category_id' => 1,
