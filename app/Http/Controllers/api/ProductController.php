@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use Illuminate\Routing\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -52,10 +56,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
         $enterpriseId = $request->user()->enterprise_id;
-
         $product = Product::create([
             'name' => $request->name,
             'description' => $request->description,
@@ -66,6 +69,14 @@ class ProductController extends Controller
             'category_id' => $request->category_id,
             'enterprise_id' => $enterpriseId,
         ]);
+
+        if ($request->hasFile('thumbnail')) {
+            $img = $request->file('thumbnail');
+            $fileName = uniqid($product->id, false) . '.' . $img->getClientOriginalExtension();
+            $imgPath = 'product_thumbnails/' . $fileName;
+            Storage::put($imgPath, file_get_contents($img));
+            $product->update(['thumbnail' => $imgPath]);
+        }
 
         return response()->json(['data' => new ProductResource($product)], 201);
     }
@@ -90,7 +101,50 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      */
 
-    public function update(Request $request, Product $product) {}
+    public function update(ProductUpdateRequest $request, Product $product)
+    {
+        $enterpriseId = $request->user()->enterprise_id;
+        if ($product->enterprise_id !== $enterpriseId) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        DB::beginTransaction();
+        try {
+            $addedStock = $request->added_stock;
+            $decreasedStock = $request->decreased_stock;
+            $newStock = $product->stock;
+
+            if ($addedStock) {
+                $newStock += $addedStock;
+            }
+            if ($decreasedStock) {
+                if ($newStock < $decreasedStock) {
+                    return response()->json(['error' => 'Not enough stock'], 400);
+                }
+                $newStock -= $decreasedStock;
+            }
+
+            $updateData = $request->except('thumbnail', 'added_stock', 'decreased_stock');
+            $updateData['stock'] = $newStock;
+            if ($newStock == 0) {
+                $updateData['status'] = 'unavailable';
+            }
+
+            if ($request->hasFile('thumbnail')) {
+                $img = $request->file('thumbnail');
+                $fileName = uniqid($product->id, false) . '.' . $img->getClientOriginalExtension();
+                $imgPath = 'product_thumbnails/' . $fileName;
+                Storage::put($imgPath, file_get_contents($img));
+                $updateData['thumbnail'] = $imgPath;
+            }
+
+            $product->update($updateData);
+            return response()->json(['data' => new ProductResource($product)], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['error' => 'Failed to update product'], 500);
+        }
+    }
 
     /**
      * Remove the specified resource from storage.
