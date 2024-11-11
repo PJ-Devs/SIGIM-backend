@@ -22,6 +22,7 @@ use App\Http\Controllers\api\{
  * 2. signUp - POST /auth/signup
  * 3. logOut - POST /auth/logout
  */
+
 Route::post('/auth/token', [AuthController::class, 'mobileTokenBasedLogin']);
 Route::post('/auth/signup', [AuthController::class, 'signUp']);
 Route::post('/auth/logout', [AuthController::class, 'logOut']);
