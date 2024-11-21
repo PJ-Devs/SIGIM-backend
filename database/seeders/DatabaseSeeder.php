@@ -52,26 +52,31 @@ class DatabaseSeeder extends Seeder
     Category::create([
       "name" => "Telefonos",
       "description" => "Categoria de Telefonos",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Audio",
       "description" => "Categoria de Audio",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Computadoras",
       "description" => "Categoria de Computadoras",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Camaras",
       "description" => "Categoria de Camaras",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Videojuegos",
       "description" => "Categoria de Videojuegos",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Supplier::create([

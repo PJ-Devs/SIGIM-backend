@@ -23,7 +23,6 @@ class AuthHelper
           'NIT' => $request->enterprise_NIT,
           'email' => $request->enterprise_email,
           'phone_number' => $request->phone_number,
-          'currency' => 'COP',
         ]);
 
         $enterprise_owner = User::create([
@@ -65,10 +64,17 @@ class AuthHelper
 
 
   /**
-   * Generate a random alfanumeric password.
+   * Generate a random alphanumeric password that includes at least one special character.
    */
   private function generateRandomPassword($length = 16)
   {
-    return substr(str_shuffle('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'), 0, $length);
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $specialCharacters = '@_!#$%&*';
+
+    $randomPart = substr(str_shuffle($characters), 0, $length - 1);
+    $specialChar = $specialCharacters[rand(0, strlen($specialCharacters) - 1)];
+    $password = str_shuffle($randomPart . $specialChar);
+
+    return $password;
   }
 }

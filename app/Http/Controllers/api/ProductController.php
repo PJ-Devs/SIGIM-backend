@@ -20,6 +20,7 @@ class ProductController extends Controller
         $this->middleware('auth:sanctum');
     }
 
+
     /**
      * Display a listing of the resource.
      */
@@ -28,7 +29,6 @@ class ProductController extends Controller
         $enterpriseId = $request->user()->enterprise_id;
         $products = Product::where('enterprise_id', $enterpriseId)
             ->where('status', 'available')
-            ->whereColumn('stock', '>', 'minimal_safe_stock')
             ->orderBy('id', 'desc');
 
         if ($request->query('search')) {
@@ -42,6 +42,7 @@ class ProductController extends Controller
         return new ProductCollection($products->paginate(20));
     }
 
+
     public function indexLowStock(Request $request)
     {
         $enterpriseId = $request->user()->enterprise_id;
@@ -52,6 +53,7 @@ class ProductController extends Controller
 
         return new ProductCollection($products->get());
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -81,15 +83,15 @@ class ProductController extends Controller
         return response()->json(['data' => new ProductResource($product)], 201);
     }
 
+
     /**
      * Display the specified resource.
      */
-
     public function show(Request $request, Product $product)
     {
         $enterpriseId = $request->user()->enterprise_id;
         if ($product->enterprise_id != $enterpriseId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], 401);
         }
 
         return response()->json([
@@ -97,10 +99,10 @@ class ProductController extends Controller
         ], 200);
     }
 
+
     /**
      * Update the specified resource in storage.
      */
-
     public function update(ProductUpdateRequest $request, Product $product)
     {
         $enterpriseId = $request->user()->enterprise_id;
@@ -146,10 +148,10 @@ class ProductController extends Controller
         }
     }
 
+
     /**
      * Remove the specified resource from storage.
      */
-
     public function destroy(Request $request, Product $product)
     {
         $enterpriseId = $request->user()->enterprise_id;

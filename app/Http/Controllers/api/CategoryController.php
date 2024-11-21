@@ -2,51 +2,117 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryStoreRequest;
+use App\Http\Requests\CategoryUpdateRequest;
+use App\Http\Resources\CategoryCollection;
+use App\Http\Resources\CategoryResource;
+use Illuminate\Routing\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $enterpriseId = $request->user()->enterprise_id;
+        $categories = Category::where('enterprise_id', $enterpriseId)
+            ->where('status', 'available')
+            ->orderBy('id', 'desc');
+
+        if ($request->query('search')) {
+            $searchTerm = '%' . $request->query('search') . '%';
+            $categories->where(function ($query) use ($searchTerm) {
+                $query->where('name', 'like', $searchTerm)
+                    ->orWhere('description', 'like', $searchTerm);
+            });
+        }
+
+        return new CategoryCollection($categories->get());
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
-        $category = Category::create($request->all());
-return response()->json(['data' => $category], 201);
-        
+        $enterpriseId = $request->user()->enterprise_id;
+        $category = Category::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'enterprise_id' => $enterpriseId,
+        ]);
+
+        return response()->json([
+            'data' => new CategoryResource($category),
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Request $request, Category $category)
     {
-        //
+        $enterpriseId = $request->user()->enterprise_id;
+        if ($category->enterprise_id !== $enterpriseId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($category->status !== 'available') {
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+
+        return response()->json([
+            'data' => new CategoryResource($category),
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(CategoryUpdateRequest $request, Category $category)
     {
-        //
+        $enterpriseId = $request->user()->enterprise_id;
+        if ($category->enterprise_id !== $enterpriseId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($category->status !== 'available') {
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+
+        $category->update($request->validated());
+
+        return response()->json([
+            'data' => new CategoryResource($category),
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Request $request, Category $category)
     {
-        //
+        $enterpriseId = $request->user()->enterprise_id;
+        if ($category->enterprise_id !== $enterpriseId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($category->status === 'available') {
+            $category->update(['status' => 'unavailable']);
+        } else if ($category->status === 'unavailable') {
+            $category->update(['status' => 'deleted']);
+        } else {
+            return response()->json(['message' => 'Not Found'], 404);
+        }
+
+        return response()->json(null, 204);
     }
 }
