@@ -27,8 +27,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $enterpriseId = $request->user()->enterprise_id;
-        $products = Product::where('enterprise_id', $enterpriseId)
-            ->where('status', 'available')
+        // where('enterprise_id', $enterpriseId)
+        $products = Product::where('status', 'available')
             ->orderBy('id', 'desc');
 
         if ($request->query('search')) {
