@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,5 +50,10 @@ class User extends Authenticatable
   public function role(): BelongsTo
   {
     return $this->belongsTo(Role::class);
+  }
+
+  public function products(): BelongsToMany
+  {
+    return $this->belongsToMany(Product::class, 'user_products', 'user_id', 'product_id')->withPivot('quantity', 'created_at', 'updated_at')->withTimestamps();
   }
 }
