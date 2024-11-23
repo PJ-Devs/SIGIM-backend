@@ -23,7 +23,6 @@ class DatabaseSeeder extends Seeder
       "NIT" => "1234567890",
       "email" => "pgosorio13@gmail.com",
       "phone_number" => "nosee",
-      "currency" => "USD"
     ]);
 
     Role::create([
@@ -41,29 +40,43 @@ class DatabaseSeeder extends Seeder
       "description" => "User",
     ]);
 
+    $user = $enterprise->users()->create([
+      "name" => "Pedro Osorio",
+      "email" => "pedroo@gmail.com",
+      "password" => bcrypt("12345678"),
+      "role_id" => 2,
+    ]);
+
+    error_log("Test token: " . $user->createToken("api_token")->plainTextToken);
+
     Category::create([
       "name" => "Telefonos",
       "description" => "Categoria de Telefonos",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Audio",
       "description" => "Categoria de Audio",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Computadoras",
       "description" => "Categoria de Computadoras",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Camaras",
       "description" => "Categoria de Camaras",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Category::create([
       "name" => "Videojuegos",
       "description" => "Categoria de Videojuegos",
+      'enterprise_id' => $enterprise->id,
     ]);
 
     Supplier::create([
@@ -82,7 +95,7 @@ class DatabaseSeeder extends Seeder
       'sale_price' => 999,
       'thumbnail' => 'storage/product_thumbnails/iphone14.jpg',
       'barcode' => '1234567890',
-      'minimal_safe_stock' => 10,
+      'minimal_safe_stock' => 40,
       'discount' => 5,
       'enterprise_id' => $enterprise->id,
       'category_id' => 1,

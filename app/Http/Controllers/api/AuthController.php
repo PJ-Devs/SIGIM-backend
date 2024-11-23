@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\helpers\AuthHelper;
-
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LogOutRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\SignUpRequest;
 use App\Mail\InitialColaboratorPasswordMail;
 use App\Models\User;
@@ -21,7 +21,8 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum', ['except' => ['mobileTokenBasedLogin', 'signUp']]);
+        $this->middleware('auth:sanctum', ['except' => ['mobileTokenBasedLogin', 'signUp', 'resetPassword']]);
+        // $this->middleware('ability:password_reset', ['only' => ['resetPassword']]);
 
         $this->authHelper = new AuthHelper();
         $this->mailingService = new MailingService();
@@ -101,6 +102,38 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Session closed successfully.',
+        ], 200);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        try {
+            $user->update(['password' => Hash::make($request->password)]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to update the password.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        // $used_token = $user->tokens()->where('name', "password_reset_{$user->id}")->first();
+        // if ($used_token) {
+        //     $used_token->delete();
+        // } else {
+        //     return response()->json([
+        //         'message' => 'Password reset token not found or already used.',
+        //     ], 404);
+        // }
+
+        return response()->json([
+            'message' => 'Password updated successfully.',
         ], 200);
     }
 

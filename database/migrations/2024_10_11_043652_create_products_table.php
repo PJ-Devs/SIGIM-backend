@@ -15,7 +15,7 @@ return new class extends Migration {
       $table->string("name", length: 100);
       $table->string("description", length: 100)->nullable();
       $table
-        ->enum("status", ["deleted", "unavailable", "available"])
+        ->enum("status", ["deleted", "available"])
         ->default("available");
       $table->integer("stock")->default(0);
       $table->decimal("supplier_price", 10, 2);
@@ -23,7 +23,7 @@ return new class extends Migration {
       $table->string("thumbnail", length: 100)->nullable();
       $table->string("barcode", length: 100)->nullable();
       $table->integer("minimal_safe_stock")->default(0);
-      $table->double("discount")->nullable();
+      $table->double("discount")->default(0)->max(1);
 
       $table
         ->foreignUlid("enterprise_id")

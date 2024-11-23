@@ -16,7 +16,6 @@ return new class extends Migration {
       $table->string("NIT", length: 100)->unique();
       $table->string("email", length: 100)->nullable();
       $table->string("phone_number", length: 100)->nullable();
-      $table->string("currency", length: 10)->default("COP");
       $table->timestamps();
     });
   }

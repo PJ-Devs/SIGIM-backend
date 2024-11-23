@@ -13,7 +13,8 @@ use App\Http\Controllers\api\{
     CategoryController,
     ClientController,
     SupplierController,
-    UserController
+    UserController,
+    OTPController
 };
 
 /**
@@ -21,11 +22,21 @@ use App\Http\Controllers\api\{
  * 1. mobileTokenBasedLogin - POST /auth/token
  * 2. signUp - POST /auth/signup
  * 3. logOut - POST /auth/logout
+ * 4. resetPassword - POST /auth/password-reset
  */
 
 Route::post('/auth/token', [AuthController::class, 'mobileTokenBasedLogin']);
 Route::post('/auth/signup', [AuthController::class, 'signUp']);
 Route::post('/auth/logout', [AuthController::class, 'logOut']);
+Route::post('/auth/password-reset', [AuthController::class, 'resetPassword']);
+
+/**
+ * OTPController routes
+ * 1. Generate password reset OTP - POST /otp/password-reset
+ * 2. Verify password reset OTP - POST /otp/password-reset/verify
+ */
+Route::post('/otp/password-reset', [OTPController::class, 'generatePasswordResetOTP']);
+Route::post('/otp/password-reset/verify', [OTPController::class, 'verifyPasswordResetOT']);
 
 /**
  * User routes
@@ -42,6 +53,7 @@ Route::get('/profile', [UserController::class, 'showProfile']);
 Route::put('/profile', [UserController::class, 'updateProfile']);
 Route::get('/enterprise', [UserController::class, 'getMyEnterprise']);
 
+Route::get('/products/low-stock', [ProductController::class, 'indexLowStock'])->name('products.low-stock');
 Route::apiResource('products', ProductController::class);
 
 Route::apiResource('enterprises', EnterpriseController::class);
