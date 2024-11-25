@@ -15,8 +15,11 @@ use App\Http\Controllers\api\{
     SupplierController,
     UserController,
     OTPController,
-    CartController  
+    CartController,
+    PushNotificationController 
 };
+
+Route::get('/send-notification', [PushNotificationController::class, 'sendPushNotification']);
 
 /**
  * AuthController routes
