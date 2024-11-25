@@ -18,7 +18,7 @@ return new class extends Migration
             $table->double('discount', 10, 2)->nullable();
             $table->double('total_price', 10, 2);
             $table->foreignId('invoice_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
-            $table->foreignId('client_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('client_id')->constrained()->onUpdate('cascade')->onDelete('restrict')->nullable()->default(null);
             $table->foreignId('product_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->timestamps();
         });

@@ -26,8 +26,13 @@ class Sale extends Model
         return $this->belongsTo(Invoice::class);
     }
 
-    public function product():HasOne
+    public function product():BelongsTo
     {
-        return $this->hasOne(Product::class);
+        return $this->belongsTo(Product::class);
+    }
+
+    public function client():BelongsTo
+    {
+        return $this->belongsTo(Client::class);
     }
 }

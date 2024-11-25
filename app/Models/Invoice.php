@@ -15,6 +15,7 @@ class Invoice extends Model
     protected $fillable = [
         'payment_method',
         'total_price',
+        'client_id'
     ];
 
     public function client():BelongsTo

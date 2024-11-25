@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->enum('payment_method', ['cash', 'debit', 'credit', 'transferency'])->nullable();
             $table->double('total_price')->default(0);
-            $table->foreignId('client_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('client_id')->constrained()->onUpdate('cascade')->onDelete('restrict')->default(1)->nullable();
             $table->timestamps();
         });
     }

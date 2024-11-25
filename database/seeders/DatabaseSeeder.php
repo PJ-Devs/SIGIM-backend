@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Enterprise;
 use App\Models\Role;
 use App\Models\Supplier;
+use App\Models\Client;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
@@ -245,5 +246,9 @@ class DatabaseSeeder extends Seeder
       'category_id' => 4,
       'supplier_id' => 1
     ]);
-  }
+
+    Client::create([
+      'name' => 'John Doe',
+    ]);    
+  } 
 }

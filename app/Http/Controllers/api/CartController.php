@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Sale;
+use App\Models\Invoice;
 
 class CartController extends Controller
 {
@@ -12,6 +14,41 @@ class CartController extends Controller
     public function __construct()
     {
         $this->middleware('auth:sanctum');
+    }
+
+    public function concludeSale(Request $request)
+    {
+        $user = $request->user();
+        $products = $user->products;
+        
+        $invoice = Invoice::create([
+            'payment_method' => $request->payment_method,
+            'total_price' => 0,
+            'client_id' => $request->client_id
+        ]);
+
+        $total = 0;
+        
+        foreach ($products as $product) {
+            #generate each sale
+            $sale = Sale::create([
+                'quantity' => $product->pivot->quantity,
+                'price' => $product->sale_price,
+                'discount' => $request->discount,
+                'total_price' => $product->sale_price * $product->pivot->quantity,
+                'invoice_id' => $invoice->id,
+                'client_id' => $request->client_id,
+                'product_id' => $product->id
+            ]);
+            $total += $product->sale_price * $product->pivot->quantity;
+        }
+
+        $total = $total - ($total * $request->discount);
+        $invoice->total_price = $total;
+
+
+        $user->products()->detach();
+        return response()->json(['message' => 'Sale concluded', 'total' => $total], 200);
     }
 
     public function attachProduct(Request $request)
