@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Product extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'description',
@@ -21,6 +21,7 @@ class Product extends Model
         'barcode',
         'minimal_safe_stock',
         'discount',
+        'is_favorite',
         'enterprise_id',
         'category_id',
         'supplier_id'
@@ -45,6 +46,4 @@ class Product extends Model
     {
         return $this->belongsToMany(User::class, 'user_products', 'product_id', 'user_id')->withPivot('quantity', 'created_at', 'updated_at')->withTimestamps();
     }
-
-
 }

@@ -22,14 +22,15 @@ class ProductUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
+            'name' => 'string|max:255',
             'description' => 'string|max:255',
-            'added_stock' => 'numeric|min:1',
-            'decreased_stock' => 'numeric|min:1',
+            'stock_change' => 'numeric|min:1',
+            'added_stock' => 'boolean',
             'sale_price' => 'decimal|min:0',
             'supplier_price' => 'decimal|min:0',
             'minimal_safe_stock' => 'numeric|min:1',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // 2MB
+            'is_favorite' => 'boolean',
         ];
     }
 
@@ -69,6 +70,7 @@ class ProductUpdateRequest extends FormRequest
             'thumbnail.image' => 'Thumbnail must be an image',
             'thumbnail.mimes' => 'Thumbnail must be a file of type: jpeg, png, jpg',
             'thumbnail.max' => 'Thumbnail may not be greater than 2048 kilobytes',
+            'is_favorite.boolean' => 'Is favorite must be a boolean',
         ];
     }
 }

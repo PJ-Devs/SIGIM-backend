@@ -24,6 +24,7 @@ class CategoryUpdateRequest extends FormRequest
         return [
             'name' => 'string|min:5|max:60',
             'description' => 'string|min:10|max:255',
+            'status' => 'string|in:available,unavailable,deleted',
         ];
     }
 
@@ -39,6 +40,7 @@ class CategoryUpdateRequest extends FormRequest
             'name.max' => 'Name must be at most 60 characters',
             'description.min' => 'Description must be at least 10 characters',
             'description.max' => 'Description must be at most 255 characters',
+            'status.in' => 'Status must be one of available, unavailable, deleted',
         ];
     }
 }
