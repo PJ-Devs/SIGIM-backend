@@ -41,4 +41,9 @@ class Product extends Model
     {
         return $this->belongsTo(Enterprise::class);
     }
+
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_products', 'product_id', 'user_id')->withPivot('quantity', 'created_at', 'updated_at')->withTimestamps();
+    }
 }

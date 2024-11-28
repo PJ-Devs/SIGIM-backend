@@ -14,7 +14,8 @@ use App\Http\Controllers\api\{
     ClientController,
     SupplierController,
     UserController,
-    OTPController
+    OTPController,
+    CartController  
 };
 
 /**
@@ -24,6 +25,7 @@ use App\Http\Controllers\api\{
  * 3. logOut - POST /auth/logout
  * 4. resetPassword - POST /auth/password-reset
  */
+
 Route::post('/auth/token', [AuthController::class, 'mobileTokenBasedLogin']);
 Route::post('/auth/signup', [AuthController::class, 'signUp']);
 Route::post('/auth/logout', [AuthController::class, 'logOut']);
@@ -64,3 +66,18 @@ Route::apiResource('roles', RoleController::class);
 Route::apiResource('categories', CategoryController::class);
 Route::apiResource('clients', ClientController::class);
 Route::apiResource('suppliers', SupplierController::class);
+
+/**
+ * Cart routes
+ * 1. attachProduct - POST /cart/attach-product
+ * 2. detachProduct - POST /cart/detach-product
+ * 3. getProducts - GET /cart/products
+ * 4. updateProductQuantity - POST /cart/update-product-quantity
+ * 5. cleanProducts - POST /cart/clean-products
+ */
+
+Route::post('/cart/attach-product', [CartController::class, 'attachProduct']);
+Route::post('/cart/detach-product', [CartController::class, 'detachProduct']);
+Route::get('/cart/products', [CartController::class, 'getProducts']);
+Route::post('/cart/update-product-quantity', [CartController::class, 'updateProductQuantity']);
+Route::post('/cart/clean-products', [CartController::class, 'cleanProducts']);
