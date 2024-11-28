@@ -53,7 +53,7 @@ Route::put('/profile', [UserController::class, 'updateProfile']);
 Route::get('/enterprise', [UserController::class, 'getMyEnterprise']);
 
 Route::get('/products/low-stock', [ProductController::class, 'indexLowStock'])->name('products.low-stock');
-Route::apiResource('products', ProductController::class);
+Route::apiResource('/products', ProductController::class);
 
 Route::apiResource('enterprises', EnterpriseController::class);
 

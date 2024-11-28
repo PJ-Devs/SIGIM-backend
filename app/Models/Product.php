@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Product extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
         'description',
@@ -21,6 +21,7 @@ class Product extends Model
         'barcode',
         'minimal_safe_stock',
         'discount',
+        'is_favorite',
         'enterprise_id',
         'category_id',
         'supplier_id'
@@ -40,6 +41,4 @@ class Product extends Model
     {
         return $this->belongsTo(Enterprise::class);
     }
-
-
 }

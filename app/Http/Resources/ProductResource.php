@@ -25,6 +25,7 @@ class ProductResource extends JsonResource
             'category' => new CategoryResource($this->category),
             'discount' => $this->discount,
             'thumbnail' => $this->thumbnail,
+            'is_favorite' => $this->is_favorite,
         ];
     }
 }
