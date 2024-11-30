@@ -59,7 +59,6 @@ Route::apiResource('products', ProductController::class);
 
 Route::apiResource('enterprises', EnterpriseController::class);
 
-Route::apiResource('invoices', InvoiceController::class);
 Route::apiResource('permissions', PermissionController::class);
 Route::apiResource('sales', SaleController::class);
 Route::apiResource('roles', RoleController::class);
@@ -83,3 +82,5 @@ Route::get('/cart/products', [CartController::class, 'getProducts']);
 Route::post('/cart/update-product-quantity', [CartController::class, 'updateProductQuantity']);
 Route::post('/cart/clean-products', [CartController::class, 'cleanProducts']);
 Route::post('/cart/conclude-sale', [CartController::class, 'concludeSale']);
+
+Route::get('/invoices/get-invoices', [InvoiceController::class, 'getInvoices']);
