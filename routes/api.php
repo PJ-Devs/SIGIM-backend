@@ -59,7 +59,6 @@ Route::apiResource('/products', ProductController::class);
 
 Route::apiResource('enterprises', EnterpriseController::class);
 
-Route::apiResource('invoices', InvoiceController::class);
 Route::apiResource('permissions', PermissionController::class);
 Route::apiResource('sales', SaleController::class);
 Route::apiResource('roles', RoleController::class);
@@ -73,7 +72,8 @@ Route::apiResource('suppliers', SupplierController::class);
  * 2. detachProduct - POST /cart/detach-product
  * 3. getProducts - GET /cart/products
  * 4. updateProductQuantity - POST /cart/update-product-quantity
- * 5. cleanProducts - POST /cart/clean-products
+ * 5. concludeSale - POST /cart/conclude-sale
+ * 6. cleanProducts - POST /cart/clean-products
  */
 
 Route::post('/cart/attach-product', [CartController::class, 'attachProduct']);
@@ -81,3 +81,6 @@ Route::post('/cart/detach-product', [CartController::class, 'detachProduct']);
 Route::get('/cart/products', [CartController::class, 'getProducts']);
 Route::post('/cart/update-product-quantity', [CartController::class, 'updateProductQuantity']);
 Route::post('/cart/clean-products', [CartController::class, 'cleanProducts']);
+Route::post('/cart/conclude-sale', [CartController::class, 'concludeSale']);
+
+Route::get('/invoices/get-invoices', [InvoiceController::class, 'getInvoices']);
