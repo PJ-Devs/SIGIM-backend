@@ -31,6 +31,7 @@ Route::get('/send-notification', [PushNotificationController::class, 'sendPushNo
 
 Route::post('/auth/token', [AuthController::class, 'mobileTokenBasedLogin']);
 Route::post('/auth/signup', [AuthController::class, 'signUp']);
+Route::post('/auth/add-collaborators', [AuthController::class, 'addCollaborators']);
 Route::post('/auth/logout', [AuthController::class, 'logOut']);
 Route::post('/auth/password-reset', [AuthController::class, 'resetPassword']);
 
@@ -53,6 +54,7 @@ Route::post('/otp/password-reset/verify', [OTPController::class, 'verifyPassword
  * 7. destroy - DELETE /users/{id}
  */
 Route::apiResource('users', UserController::class);
+Route::get('/enterprise_users', [UserController::class, 'enterpriseUsers']);
 Route::get('/profile', [UserController::class, 'showProfile']);
 Route::put('/profile', [UserController::class, 'updateProfile']);
 Route::get('/enterprise', [UserController::class, 'getMyEnterprise']);

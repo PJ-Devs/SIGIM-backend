@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\helpers;
 
 use App\Http\Requests\SignUpRequest;
+use App\Http\Requests\AddCollaboratorsRequest;
 use App\Models\Enterprise;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -33,8 +34,25 @@ class AuthHelper
           'role_id' => 1,
         ]);
 
+        return [$enterprise, $enterprise_owner];
+      } catch (\Exception $e) {
+        Log::error('Error al crear la empresa: ' . $e->getMessage());
+        throw $e;
+      }
+    });
+  }
+
+
+  public function processSignUpUsers(AddCollaboratorsRequest $request, string $enterprise)
+  {
+    return DB::transaction(function () use ($request, $enterprise) {
+      try {
+        echo  json_encode($request->colaborators) ;
+        echo  json_encode($request) ;
+
         // Crear los colaboradores
         $created_colaborators = [];
+        
         if (is_array($request->colaborators)) {
           foreach ($request->colaborators as $colaboratorData) {
             $temp_password = $this->generateRandomPassword();
@@ -42,10 +60,11 @@ class AuthHelper
             $colaborator = User::create([
               'name' => $colaboratorData['name'],
               'email' => $colaboratorData['email'],
-              'enterprise_id' => $enterprise->id,
+              'enterprise_id' => $enterprise,
               'password' => Hash::make($temp_password),
               'role_id' => $colaboratorData['role'],
             ]);
+
 
             $created_colaborators[] = [
               'user' => $colaborator,
@@ -54,9 +73,9 @@ class AuthHelper
           }
         }
 
-        return [$enterprise, $enterprise_owner, $created_colaborators];
+        return [$created_colaborators];
       } catch (\Exception $e) {
-        Log::error('Error al crear la empresa y colaboradores: ' . $e->getMessage());
+        Log::error('Error al crear los colaboradores: ' . $e->getMessage());
         throw $e;
       }
     });
