@@ -27,17 +27,17 @@ class DatabaseSeeder extends Seeder
     ]);
 
     Role::create([
-      "name" => "Enterprise Owner",
+      "name" => "Dueño de Empresa",
       "description" => "Enterprise Owner",
     ]);
 
     Role::create([
-      "name" => "Admin",
+      "name" => "Administrador",
       "description" => "Administrator",
     ]);
 
     Role::create([
-      "name" => "User",
+      "name" => "Empleado",
       "description" => "User",
     ]);
 
@@ -92,12 +92,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Latest Apple smartphone with 128GB storage, 6.1-inch display, and A15 Bionic chip.',
       'status' => 'available',
       'stock' => 35,
-      'supplier_price' => 800,
-      'sale_price' => 999,
+      'supplier_price' => 3499000,
+      'sale_price' => 3999000,
       'thumbnail' => 'storage/product_thumbnails/iphone14.jpg',
       'barcode' => '1234567890',
       'minimal_safe_stock' => 40,
-      'discount' => 5,
+      'discount' => 5 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 1,
       'supplier_id' => 1
@@ -108,12 +108,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Samsung Galaxy S23 with 256GB storage, 6.2-inch AMOLED display, and Snapdragon 8 Gen 2 processor.',
       'status' => 'available',
       'stock' => 50,
-      'supplier_price' => 750,
-      'sale_price' => 950,
+      'supplier_price' => 3990000,
+      'sale_price' => 4490000,
       'thumbnail' => 'storage/product_thumbnails/s23.jpg',
       'barcode' => '1234567891',
       'minimal_safe_stock' => 15,
-      'discount' => 10,
+      'discount' => 10 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 1,
       'supplier_id' => 1
@@ -124,12 +124,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Sony noise-cancelling wireless headphones with 30-hour battery life and premium sound quality.',
       'status' => 'available',
       'stock' => 75,
-      'supplier_price' => 280,
-      'sale_price' => 349,
+      'supplier_price' => 620000,
+      'sale_price' => 699000,
       'thumbnail' => 'storage/product_thumbnails/sonyhw.jpg',
       'barcode' => '1234567892',
       'minimal_safe_stock' => 20,
-      'discount' => 15,
+      'discount' => 0,
       'enterprise_id' => $enterprise->id,
       'category_id' => 2,
       'supplier_id' => 1
@@ -140,12 +140,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Dell XPS 13 laptop with Intel i7 processor, 16GB RAM, 512GB SSD, and 13.3-inch 4K display.',
       'status' => 'available',
       'stock' => 20,
-      'supplier_price' => 1000,
-      'sale_price' => 1200,
+      'supplier_price' => 4499000,
+      'sale_price' => 4999000,
       'thumbnail' => 'storage/product_thumbnails/dell.jpg',
       'barcode' => '1234567893',
       'minimal_safe_stock' => 8,
-      'discount' => 7,
+      'discount' => 7 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 3,
       'supplier_id' => 1
@@ -156,15 +156,16 @@ class DatabaseSeeder extends Seeder
       'description' => 'Google Pixel 8 with 128GB storage, Google Tensor G3 processor, and 50MP dual camera system.',
       'status' => 'available',
       'stock' => 40,
-      'supplier_price' => 650,
-      'sale_price' => 799,
+      'supplier_price' => 3299000,
+      'sale_price' => 3799000,
       'thumbnail' => 'storage/product_thumbnails/pixel.jpg',
       'barcode' => '1234567894',
       'minimal_safe_stock' => 10,
-      'discount' => 12,
+      'discount' => 12 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 1,
-      'supplier_id' => 1
+      'supplier_id' => 1,
+      'is_favorite' => true
     ]);
 
     Product::create([
@@ -172,12 +173,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Apple MacBook Pro 16-inch with M2 Max chip, 32GB RAM, and 1TB SSD.',
       'status' => 'available',
       'stock' => 15,
-      'supplier_price' => 2000,
-      'sale_price' => 2499,
+      'supplier_price' => 8399000,
+      'sale_price' => 8999000,
       'thumbnail' => 'storage/product_thumbnails/mb16.jpg',
       'barcode' => '1234567895',
       'minimal_safe_stock' => 5,
-      'discount' => 8,
+      'discount' => 3 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 3,
       'supplier_id' => 1
@@ -188,15 +189,16 @@ class DatabaseSeeder extends Seeder
       'description' => 'Nikon Z7 II mirrorless camera with 45.7MP full-frame sensor and 4K video recording.',
       'status' => 'available',
       'stock' => 10,
-      'supplier_price' => 2600,
-      'sale_price' => 2999,
+      'supplier_price' => 11999000,
+      'sale_price' => 12999000,
       'thumbnail' => 'storage/product_thumbnails/nikon.jpg',
       'barcode' => '1234567896',
       'minimal_safe_stock' => 3,
-      'discount' => 5,
+      'discount' => 5 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 4,
-      'supplier_id' => 1
+      'supplier_id' => 1,
+      'is_favorite' => true
     ]);
 
     Product::create([
@@ -204,12 +206,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Bose portable Bluetooth speaker with 360-degree sound and water-resistant design.',
       'status' => 'available',
       'stock' => 60,
-      'supplier_price' => 160,
-      'sale_price' => 199,
+      'supplier_price' => 480000,
+      'sale_price' => 549000,
       'thumbnail' => 'storage/product_thumbnails/bsr.jpg',
       'barcode' => '1234567897',
       'minimal_safe_stock' => 15,
-      'discount' => 12,
+      'discount' => 0,
       'enterprise_id' => $enterprise->id,
       'category_id' => 3,
       'supplier_id' => 1
@@ -220,12 +222,12 @@ class DatabaseSeeder extends Seeder
       'description' => 'Sony PlayStation 5 console with ultra-fast SSD and 4K gaming capabilities.',
       'status' => 'available',
       'stock' => 25,
-      'supplier_price' => 450,
-      'sale_price' => 499,
+      'supplier_price' => 2150000,
+      'sale_price' => 2490000,
       'thumbnail' => 'storage/product_thumbnails/ps5.jpg',
       'barcode' => '1234567898',
       'minimal_safe_stock' => 8,
-      'discount' => 3,
+      'discount' => 5 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 5,
       'supplier_id' => 1
@@ -236,15 +238,16 @@ class DatabaseSeeder extends Seeder
       'description' => 'GoPro HERO11 Black action camera with 5.3K video and waterproof design.',
       'status' => 'available',
       'stock' => 45,
-      'supplier_price' => 400,
-      'sale_price' => 499,
+      'supplier_price' => 1600000,
+      'sale_price' => 1790000,
       'thumbnail' => 'storage/product_thumbnails/gopro.jpg',
       'barcode' => '1234567899',
       'minimal_safe_stock' => 12,
-      'discount' => 10,
+      'discount' => 10 / 100,
       'enterprise_id' => $enterprise->id,
       'category_id' => 4,
-      'supplier_id' => 1
+      'supplier_id' => 1,
+      'is_favorite' => true
     ]);
 
     Client::create([

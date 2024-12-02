@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name', length: 100);
             $table->string('description', length: 255)->nullable();
             $table
-                ->enum("status", ["deleted", "unavailable", "available"])
+                ->enum("status", ["unavailable", "available"])
                 ->default("available");
             $table->foreignUlid("enterprise_id")
                 ->constrained()

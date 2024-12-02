@@ -23,8 +23,9 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         $enterpriseId = $request->user()->enterprise_id;
+        $statusSearch = $request->query('status');
         $categories = Category::where('enterprise_id', $enterpriseId)
-            ->where('status', 'available')
+            ->where('status', $statusSearch ?? 'available')
             ->orderBy('id', 'desc');
 
         if ($request->query('search')) {
@@ -65,10 +66,6 @@ class CategoryController extends Controller
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
-        if ($category->status !== 'available') {
-            return response()->json(['message' => 'Not Found'], 404);
-        }
-
         return response()->json([
             'data' => new CategoryResource($category),
         ]);
@@ -82,10 +79,6 @@ class CategoryController extends Controller
         $enterpriseId = $request->user()->enterprise_id;
         if ($category->enterprise_id !== $enterpriseId) {
             return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        if ($category->status !== 'available') {
-            return response()->json(['message' => 'Not Found'], 404);
         }
 
         $category->update($request->validated());
@@ -108,9 +101,7 @@ class CategoryController extends Controller
         if ($category->status === 'available') {
             $category->update(['status' => 'unavailable']);
         } else if ($category->status === 'unavailable') {
-            $category->update(['status' => 'deleted']);
-        } else {
-            return response()->json(['message' => 'Not Found'], 404);
+            $category->delete();
         }
 
         return response()->json(null, 204);
