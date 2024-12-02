@@ -41,14 +41,14 @@ class AuthController extends Controller
         // Check if the user exists and the password is correct
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'email' => ['Las credenciales proporcionadas son incorrectas.'],
             ]);
         }
 
         // Verify if the device name is already in use
         if ($user->tokens()->where('name', $request->device_name)->exists()) {
             return response()->json([
-                'message' => 'This device have an active session.',
+                'message' => 'Este dispositivo ya tiene una sesión activa.',
             ], 409);
         }
 
@@ -56,7 +56,6 @@ class AuthController extends Controller
             'access_token' => $user->createToken($request->device_name)->plainTextToken,
         ]);
     }
-
 
     /**
      * Register a new enterprise, its owner and its colaborators.
@@ -85,7 +84,7 @@ class AuthController extends Controller
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'An error occurred while trying to create the enterprise.',
+                'message' => 'Ocurrió un error al intentar crear la empresa.',
                 'error' => $e->getMessage()
             ], 500);
         }
@@ -97,14 +96,14 @@ class AuthController extends Controller
 
         if (!$device_token) {
             return response()->json([
-                'message' => 'This device does not have an active session.',
+                'message' => 'Este dispositivo no tiene una sesión activa.',
             ], 404);
         }
 
         $device_token->delete();
 
         return response()->json([
-            'message' => 'Session closed successfully.',
+            'message' => 'Sesión cerrada con éxito.',
         ], 200);
     }
 
@@ -114,13 +113,13 @@ class AuthController extends Controller
 
         if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'user.change_password')) {
             return response()->json([
-                'message' => 'Unauthorized',
+                'message' => 'No autorizado.',
             ], 401);
         }
 
         if (!$user) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'Usuario no encontrado.',
             ], 404);
         }
 
@@ -128,22 +127,13 @@ class AuthController extends Controller
             $user->update(['password' => Hash::make($request->password)]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to update the password.',
+                'message' => 'Error al actualizar la contraseña.',
                 'error' => $e->getMessage()
             ], 500);
         }
 
-        // $used_token = $user->tokens()->where('name', "password_reset_{$user->id}")->first();
-        // if ($used_token) {
-        //     $used_token->delete();
-        // } else {
-        //     return response()->json([
-        //         'message' => 'Password reset token not found or already used.',
-        //     ], 404);
-        // }
-
         return response()->json([
-            'message' => 'Password updated successfully.',
+            'message' => 'Contraseña actualizada con éxito.',
         ], 200);
     }
 
