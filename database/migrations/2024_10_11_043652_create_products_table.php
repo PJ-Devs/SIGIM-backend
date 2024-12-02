@@ -15,7 +15,7 @@ return new class extends Migration {
       $table->string("name", length: 100);
       $table->string("description", length: 100)->nullable();
       $table
-        ->enum("status", ["unavailable", "available"])
+        ->enum("status", ["unavailable", "available", "deleted"])
         ->default("available");
       $table->integer("stock")->default(0);
       $table->integer("supplier_price")->min(0);

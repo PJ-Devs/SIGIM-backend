@@ -28,8 +28,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $enterpriseId = $request->user()->enterprise_id;
-        // where('enterprise_id', $enterpriseId)
-        $products = Product::where('status', 'available')
+        $products = Product::where('enterprise_id', $enterpriseId)
+            ->where('status', '!=', 'deleted')
             ->orderBy('is_favorite', 'desc')
             ->orderBy('id', 'desc');
 
@@ -41,19 +41,28 @@ class ProductController extends Controller
             });
         }
 
-        return new ProductCollection($products->paginate(20));
-    }
+        if ($request->query('status')) {
+            switch ($request->query('status')) {
+                case 'available':
+                    $products->where('status', 'available');
+                    break;
+                case 'unavailable':
+                    $products->where('status', 'unavailable');
+                    break;
+                case 'low_stock':
+                    $products->whereColumn('stock', '<=', 'minimal_safe_stock');
+                    break;
+                case 'out_of_stock':
+                    $products->whereColumn('stock', '=', '0');
+                    break;
+            }
+        }
 
+        if ($request->query('categor')) {
+            $products->where('category_id', $request->query('category'));
+        }
 
-    public function indexLowStock(Request $request)
-    {
-        $enterpriseId = $request->user()->enterprise_id;
-        // where('enterprise_id', $enterpriseId)
-        $products = Product::where('status', 'available')
-            ->whereColumn('stock', '<=', 'minimal_safe_stock')
-            ->orderBy('stock', 'asc');
-
-        return new ProductCollection($products->get());
+        return new ProductCollection($products->paginate(10));
     }
 
 
@@ -100,9 +109,9 @@ class ProductController extends Controller
     public function show(Request $request, Product $product)
     {
         $enterpriseId = $request->user()->enterprise_id;
-        // if ($product->enterprise_id != $enterpriseId) {
-        //     return response()->json(['message' => 'Unauthorized'], 401);
-        // }
+        if ($product->enterprise_id != $enterpriseId) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
         return response()->json([
             'data' => new ProductResource($product)
@@ -120,22 +129,38 @@ class ProductController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        if ($product->status !== 'available') {
+            if (!$request->status) {
+                return response()->json(['error' => 'A product which is not available cant be updated.'], 400);
+            }
+
+            $product->update(['status' => $request->status]);
+            return response()->json(['data' => new ProductResource($product)], 200);
+        }
+
+        $updateData = $request->except('thumbnail', 'stock_change', 'added_stock', 'stock');
+
         DB::beginTransaction();
         try {
             $stockChange = $request->stock_change;
             $isAddedStock = $request->added_stock; // true if added, false if decreased
+            $newStock = $request->stock;
 
-            if ($isAddedStock) {
-                $product->stock += $stockChange;
-            } else {
-                if ($product->stock < $stockChange) {
-                    return response()->json(['error' => 'Not enough stock'], 400);
+            if (!$newStock) {
+                if ($isAddedStock) {
+                    $product->stock += $stockChange;
+                } else {
+                    if ($product->stock < $stockChange) {
+                        return response()->json(['error' => 'Not enough stock'], 400);
+                    }
+                    $product->stock -= $stockChange;
                 }
-                $product->stock -= $stockChange;
+
+                $updateData['stock'] = $product->stock;
+            } else {
+                $updateData['stock'] = $newStock;
             }
 
-            $updateData = $request->except('thumbnail', 'stock_change', 'added_stock');
-            $updateData['stock'] = $product->stock;
 
             if ($request->hasFile('thumbnail')) {
                 $img = $request->file('thumbnail');

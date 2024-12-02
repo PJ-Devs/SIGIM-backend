@@ -4,11 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Enterprise;
-use App\Models\Role;
+use App\Models\Product;
 use App\Models\Supplier;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Product;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,27 +16,18 @@ class DatabaseSeeder extends Seeder
    */
   public function run(): void
   {
+    $this->call([
+      PermissionsSeeder::class,
+      RolesSeeder::class,
+    ]);
+
+    // ----------------------------
 
     $enterprise = Enterprise::create([
       "name" => "Enterprise 1",
       "NIT" => "1234567890",
       "email" => "pgosorio13@gmail.com",
       "phone_number" => "nosee",
-    ]);
-
-    Role::create([
-      "name" => "Dueño de Empresa",
-      "description" => "Enterprise Owner",
-    ]);
-
-    Role::create([
-      "name" => "Administrador",
-      "description" => "Administrator",
-    ]);
-
-    Role::create([
-      "name" => "Empleado",
-      "description" => "User",
     ]);
 
     $user = $enterprise->users()->create([
@@ -48,6 +38,8 @@ class DatabaseSeeder extends Seeder
     ]);
 
     error_log("Test token: " . $user->createToken("api_token")->plainTextToken);
+
+    // ----------------------------
 
     Category::create([
       "name" => "Telefonos",
@@ -79,12 +71,16 @@ class DatabaseSeeder extends Seeder
       'enterprise_id' => $enterprise->id,
     ]);
 
+    // ----------------------------
+
     Supplier::create([
       "name" => "nose",
       "email" => "tampocose",
       "phone_number" => "tampocose",
       "NIT" => "nose",
     ]);
+
+    // ----------------------------
 
     Product::create([
       'name' => 'Apple iPhone 14',

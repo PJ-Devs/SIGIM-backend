@@ -31,7 +31,8 @@ class CartController extends Controller
         return response()->json(['message' => 'Product detached from user'], 200);
     }
 
-    public function getProducts(Request $request){
+    public function getProducts(Request $request)
+    {
         $user = $request->user();
         $products = $user->products;
         return response()->json(["data" => $products], 200);

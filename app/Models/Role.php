@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Role extends Model
 {
-  use HasFactory;
+    use HasFactory;
 
-  protected $fillable = ["name", "description"];
+    protected $fillable = ["name", "description"];
 
-  public function permissions(): BelongsToMany
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'permission_roles');
     }

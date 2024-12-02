@@ -26,11 +26,14 @@ class ProductUpdateRequest extends FormRequest
             'description' => 'string|max:255',
             'stock_change' => 'numeric|min:1',
             'added_stock' => 'boolean',
-            'sale_price' => 'decimal|min:0',
-            'supplier_price' => 'decimal|min:0',
+            'stock' => 'numeric|min:0',
+            'status' => 'string|in:available,unavailable,deleted',
+            'sale_price' => 'numeric|min:0',
+            'supplier_price' => 'numeric|min:0',
             'minimal_safe_stock' => 'numeric|min:1',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // 2MB
             'is_favorite' => 'boolean',
+            'category_id' => 'exists:categories,id',
         ];
     }
 
@@ -53,24 +56,26 @@ class ProductUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Name is required',
-            'description.required' => 'Description is required',
-            'stock.required' => 'Stock is required',
+            'name.string' => 'Name must be a string',
+            'name.max' => 'Name may not be greater than 255 characters',
+            'description.string' => 'Description must be a string',
+            'description.max' => 'Description may not be greater than 255 characters',
+            'stock_change.numeric' => 'Stock change must be a number',
+            'stock_change.min' => 'Stock change must be greater than or equal to 1',
+            'added_stock.boolean' => 'Added stock must be a boolean',
             'stock.numeric' => 'Stock must be a number',
-            'stock.min' => 'Stock must be greater than or equal to 1',
-            'sale_price.required' => 'Sale price is required',
-            'sale_price.decimal' => 'Sale price must be a number',
+            'stock.min' => 'Stock must be greater than or equal to 0',
+            'sale_price.numeric' => 'Sale price must be a decimal',
             'sale_price.min' => 'Sale price must be greater than or equal to 0',
-            'supplier_price.required' => 'Supplier price is required',
-            'supplier_price.decimal' => 'Supplier price must be a number',
+            'supplier_price.numeric' => 'Supplier price must be a decimal',
             'supplier_price.min' => 'Supplier price must be greater than or equal to 0',
-            'minimal_safe_stock.required' => 'Minimal safe stock is required',
             'minimal_safe_stock.numeric' => 'Minimal safe stock must be a number',
             'minimal_safe_stock.min' => 'Minimal safe stock must be greater than or equal to 1',
             'thumbnail.image' => 'Thumbnail must be an image',
             'thumbnail.mimes' => 'Thumbnail must be a file of type: jpeg, png, jpg',
             'thumbnail.max' => 'Thumbnail may not be greater than 2048 kilobytes',
             'is_favorite.boolean' => 'Is favorite must be a boolean',
+            'category_id.exists' => 'Category does not exist',
         ];
     }
 }

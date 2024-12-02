@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\helpers\AuthHelper;
+use App\Http\Controllers\helpers\RoleAuthorizationHelper;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LogOutRequest;
 use App\Http\Requests\ResetPasswordRequest;
@@ -17,6 +18,7 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
     protected $authHelper;
+    protected $roleAuthorizationHelper;
     protected $mailingService;
 
     public function __construct()
@@ -25,6 +27,7 @@ class AuthController extends Controller
         // $this->middleware('ability:password_reset', ['only' => ['resetPassword']]);
 
         $this->authHelper = new AuthHelper();
+        $this->roleAuthorizationHelper = new RoleAuthorizationHelper();
         $this->mailingService = new MailingService();
     }
 
@@ -108,6 +111,13 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         $user = User::where('email', $request->email)->first();
+
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'user.change_password')) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
         if (!$user) {
             return response()->json([
                 'message' => 'User not found',

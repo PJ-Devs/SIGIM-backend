@@ -15,7 +15,7 @@ use App\Http\Controllers\api\{
     SupplierController,
     UserController,
     OTPController,
-    CartController  
+    CartController
 };
 
 /**
@@ -54,9 +54,24 @@ Route::get('/profile', [UserController::class, 'showProfile']);
 Route::put('/profile', [UserController::class, 'updateProfile']);
 Route::get('/enterprise', [UserController::class, 'getMyEnterprise']);
 
-Route::get('/products/low-stock', [ProductController::class, 'indexLowStock'])->name('products.low-stock');
+/**
+ * ProductController routes
+ * 1. index - GET /products
+ * 2. show - GET /products/{id}
+ * 3. store - POST /products
+ * 4. update - PUT /products/{id}
+ * 5. destroy - DELETE /products/{id}
+ */
 Route::apiResource('/products', ProductController::class);
 
+/**
+ * EnterpriseController routes
+ * 1. index - GET /enterprises
+ * 2. show - GET /enterprises/{id}
+ * 3. store - POST /enterprises
+ * 4. update - PUT /enterprises/{id}
+ * 5. destroy - DELETE /enterprises/{id}
+ */
 Route::apiResource('enterprises', EnterpriseController::class);
 
 Route::apiResource('invoices', InvoiceController::class);

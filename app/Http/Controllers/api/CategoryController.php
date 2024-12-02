@@ -100,6 +100,12 @@ class CategoryController extends Controller
 
         if ($category->status === 'available') {
             $category->update(['status' => 'unavailable']);
+
+            $products = $category->products();
+            // Updates products status to unavailable when category status is set to unavailable
+            $products->each(function ($product) {
+                $product->update(['status' => 'unavailable']);
+            });
         } else if ($category->status === 'unavailable') {
             $category->delete();
         }
