@@ -34,7 +34,7 @@ class SupplierController extends Controller
             ], 401);
         }
 
-        $suppliers = Supplier::all();
+        $suppliers = Supplier::where('enterprise_id', $user->enterprise_id)->get();
         return response()->json(['data' => $suppliers], 200);
     }
 
@@ -47,13 +47,20 @@ class SupplierController extends Controller
     public function store(StoreSupplierRequest $request)
     {
         $user = $request->user();
+        $enterprise = $user->enterprise_id;
         if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'supplier.create')) {
             return response()->json([
                 'message' => 'No estás autorizado para realizar esta acción.'
             ], 401);
         }
 
-        $supplier = Supplier::create($request->all());
+        $supplier = Supplier::create([
+            "name" => $request->name,
+            "email"=> $request->email,
+            "phone_number" => $request->phone_number,
+            "NIT" => $request->NIT,
+            "enterprise_id" => $enterprise
+        ]);
         return response()->json(['data' => $supplier], 201);
     }
 

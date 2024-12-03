@@ -111,6 +111,7 @@ class DatabaseSeeder extends Seeder
       "email" => "tampocose",
       "phone_number" => "tampocose",
       "NIT" => "nose",
+      "enterprise_id" => $enterprise->id,
     ]);
 
     // ----------------------------

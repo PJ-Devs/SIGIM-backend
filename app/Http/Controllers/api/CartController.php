@@ -69,11 +69,6 @@ class CartController extends Controller
     public function attachProduct(Request $request)
     {
         $user = $request->user();
-        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'invoice.update')) {
-            return response()->json([
-                'message' => 'No tienes autorización para realizar esta acción.'
-            ], 401);
-        }
 
         $product = Product::find($request->product_id);
         if ($product->stock < $request->quantity) {
@@ -109,11 +104,6 @@ class CartController extends Controller
     public function detachProduct(Request $request)
     {
         $user = $request->user();
-        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'invoice.update')) {
-            return response()->json([
-                'message' => 'No tienes autorización para realizar esta acción.'
-            ], 401);
-        }
 
         $product = Product::find($request->product_id);
         $user->products()->detach($product->id);
@@ -129,13 +119,11 @@ class CartController extends Controller
     public function getProducts(Request $request)
     {
         $user = $request->user();
-        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'invoice.read')) {
-            return response()->json([
-                'message' => 'No tienes autorización para realizar esta acción.'
-            ], 401);
-        }
-
         $products = $user->products;
+
+        if(!$products) {
+            return response()->json(["data" => []], 200);
+        }
         return response()->json(["data" => $products], 200);
     }
 
@@ -148,11 +136,6 @@ class CartController extends Controller
     public function updateProductQuantity(Request $request)
     {
         $user = $request->user();
-        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'invoice.update')) {
-            return response()->json([
-                'message' => 'No tienes autorización para realizar esta acción.'
-            ], 401);
-        }
 
         $product = Product::find($request->product_id);
         if ($request->quantity < $product->minimal_safe_stock) {
@@ -192,11 +175,6 @@ class CartController extends Controller
     public function cleanProducts(Request $request)
     {
         $user = $request->user();
-        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'invoice.update')) {
-            return response()->json([
-                'message' => 'No tienes autorización para realizar esta acción.'
-            ], 401);
-        }
 
         $products = $user->products;
         foreach ($products as $product) {

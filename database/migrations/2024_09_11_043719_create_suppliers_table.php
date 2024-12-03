@@ -17,6 +17,11 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('NIT')->nullable();
+            $table
+            ->foreignUlid("enterprise_id")
+            ->constrained()
+            ->onUpdate("cascade")
+            ->onDelete("cascade");
             $table->timestamps();
         });
     }

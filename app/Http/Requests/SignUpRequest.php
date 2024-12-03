@@ -34,7 +34,7 @@ class SignUpRequest extends FormRequest
             'colaborators' => 'nullable|array',
             'colaborators.*.name' => 'required|string',
             'colaborators.*.email' => 'required|email|unique:users,email',
-            'colaborators.*.role' => 'required|integer|exists:roles,id|not_in:1',
+            'colaborators.*.role' => 'required|integer|exists:roles,id|not_in:5',
 
             'device_name' => 'required'
         ];

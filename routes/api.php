@@ -21,7 +21,7 @@ use App\Http\Controllers\api\{
 
 Route::get('/send-notification', [PushNotificationController::class, 'sendPushNotification']);
 
-/**
+/**A
  * AuthController routes
  * 1. mobileTokenBasedLogin - POST /auth/token
  * 2. signUp - POST /auth/signup
