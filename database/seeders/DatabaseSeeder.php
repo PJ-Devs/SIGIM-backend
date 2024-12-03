@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Enterprise;
 use App\Models\Product;
 use App\Models\Supplier;
+use App\Models\Client;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -276,5 +277,9 @@ class DatabaseSeeder extends Seeder
       'supplier_id' => 1,
       'is_favorite' => true
     ]);
-  }
+
+    Client::create([
+      'name' => 'John Doe',
+    ]);    
+  } 
 }

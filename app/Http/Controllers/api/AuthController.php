@@ -8,12 +8,14 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\LogOutRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\SignUpRequest;
+use App\Http\Requests\AddCollaboratorsRequest;
 use App\Mail\InitialColaboratorPasswordMail;
 use App\Models\User;
 use App\Services\MailingService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Models\Enterprise;
 
 class AuthController extends Controller
 {
@@ -66,15 +68,7 @@ class AuthController extends Controller
             [
                 $enterprise,
                 $registered_owner,
-                $colaborators_passwords
             ] = $this->authHelper->processSignUpTransaction($request);
-
-            foreach ($colaborators_passwords as $colaborator) {
-                $this->mailingService->sendEmail(
-                    $colaborator['user']->email,
-                    new InitialColaboratorPasswordMail($enterprise, $colaborator['user'], $colaborator['password'])
-                );
-            }
 
             $accessToken = $registered_owner->createToken($request->device_name)->plainTextToken;
             $registered_owner->update(['is_first_login' => false]);
@@ -89,6 +83,48 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function addCollaborators(AddCollaboratorsRequest $request)
+    {
+        try {
+            $enterprise = $request->input('enterprise');
+            $enterprise = Enterprise::find($enterprise);
+            echo "voy a mostrar la enterprise";
+            echo json_encode($enterprise);
+    
+            if (!$enterprise) {
+                $user = auth()->user();  
+                if (!$user || !$user->enterprise_id) {
+                    return response()->json([
+                        'message' => 'Enterprise not found for authenticated user.',
+                    ], 400);
+                }
+                $enterprise = $user->enterprise_id;
+            }
+    
+            [
+                $colaborators_passwords
+            ] = $this->authHelper->processSignUpUsers($request, $enterprise->id);
+    
+            foreach ($colaborators_passwords as $colaborator) {
+                $this->mailingService->sendEmail(
+                    $colaborator['user']->email,
+                    new InitialColaboratorPasswordMail($enterprise, $colaborator['user'], $colaborator['password'])
+                );
+            }
+    
+            return response()->json([
+                'message' => 'Collaborators added successfully.',
+            ], 200);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while trying to add the collaborators.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+    
 
     public function logout(LogOutRequest $request)
     {
