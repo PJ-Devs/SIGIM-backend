@@ -48,8 +48,8 @@ class ProductController extends Controller
             });
         }
 
-        if ($request->query('status')) {
-            switch ($request->query('status')) {
+        if ($status = $request->query('status')) {
+            switch ($status) {
                 case 'available':
                     $products->where('status', 'available');
                     break;
@@ -60,13 +60,15 @@ class ProductController extends Controller
                     $products->whereColumn('stock', '<=', 'minimal_safe_stock');
                     break;
                 case 'out_of_stock':
-                    $products->whereColumn('stock', '=', '0');
+                    $products->where('stock', 0);
                     break;
             }
+        } else {
+            $products->where('status', 'available');
         }
 
-        if ($request->query('categor')) {
-            $products->where('category_id', $request->query('category'));
+        if ($categoryId = $request->query('category')) {
+            $products->where('category_id', $categoryId);
         }
 
         return new ProductCollection($products->paginate(10));
@@ -174,8 +176,10 @@ class ProductController extends Controller
                     }
                     $product->stock -= $stockChange;
                 }
-
                 $updateData['stock'] = $product->stock;
+                if ($updateData['stock'] === 0) {
+                    $updateData['status'] = 'unavailable';
+                }
             } else {
                 $updateData['stock'] = $newStock;
             }

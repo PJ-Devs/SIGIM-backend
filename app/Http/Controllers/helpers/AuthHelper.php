@@ -53,7 +53,7 @@ class AuthHelper
       try {
         // Crear los colaboradores
         $created_colaborators = [];
-        
+
         if (is_array($request->colaborators)) {
           foreach ($request->colaborators as $colaboratorData) {
             $temp_password = $this->generateRandomPassword();

@@ -6,56 +6,58 @@ use Illuminate\Routing\Controller;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 
-class InvoiceController extends Controller {
+class InvoiceController extends Controller
+{
 
-    public function __construct() {
-        $this->middleware( 'auth:sanctum' );
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
     }
 
     /**
-    * Display a listing of the resource.
-    */
+     * Display a listing of the resource.
+     */
 
-    public function index() {
+    public function index() {}
+
+    /**
+     * Store a newly created resource in storage.
+     */
+
+    public function store(Request $request)
+    {
+        $invoice = Invoice::create($request->all());
+        return response()->json(['data' => $invoice], 201);
     }
 
     /**
-    * Store a newly created resource in storage.
-    */
+     * Display the specified resource.
+     */
 
-    public function store( Request $request ) {
-        $invoice = Invoice::create( $request->all() );
-        return response()->json( [ 'data' => $invoice ], 201 );
+    public function show(string $id)
+    {
+        $invoice = Invoice::find($id);
+        return response()->json(['data' => $invoice], 200);
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Update the specified resource in storage.
+     */
 
-    public function show( string $id ) {
-        $invoice = Invoice::find( $id );
-        return response()->json( [ 'data' => $invoice ], 200 );
-    }
+    public function update(Request $request, Invoice $enterprise) {}
 
     /**
-    * Update the specified resource in storage.
-    */
+     * Remove the specified resource from storage.
+     */
 
-    public function update( Request $request, Invoice $enterprise ) {
-      
-
-    }
-
-    /**
-    * Remove the specified resource from storage.
-    */
-
-    public function destroy( string $id ) {
+    public function destroy(string $id)
+    {
         $product->delete();
-        return response( null, 204 );
+        return response(null, 204);
     }
 
-    public function getInvoices(Request $request) {
+    public function getInvoices(Request $request)
+    {
         $user = $request->user();
         $invoices = $user->invoices;
         return response()->json(['data' => $invoices], 200);

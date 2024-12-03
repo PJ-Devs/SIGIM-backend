@@ -9,11 +9,11 @@ use App\Models\Product;
 use App\Services\PushNotificationService;
 use App\Models\Sale;
 use App\Models\Invoice;
+use Carbon\Factory;
 
 class CartController extends Controller
 {
     protected $roleAuthorizationHelper;
-
     protected $pushNotificationService;
 
     public function __construct()
@@ -31,7 +31,7 @@ class CartController extends Controller
         if ($products->count() == 0) {
             return response()->json(['message' => 'No products in cart'], 400);
         }
-        
+
         $invoice = Invoice::create([
             'payment_method' => $request->payment_method,
             'user_id' => $user->id,
@@ -40,7 +40,7 @@ class CartController extends Controller
         ]);
 
         $total = 0;
-        
+
         foreach ($products as $product) {
             #generate each sale
             $product_price = $product->sale_price;
@@ -87,7 +87,7 @@ class CartController extends Controller
         }
 
         $user->products()->attach($product->id, ['quantity' => $request->quantity]);
-        
+
         #update the stock
         $product->stock = $product->stock - $request->quantity;
         $product->save();
@@ -139,24 +139,21 @@ class CartController extends Controller
 
         $product = Product::find($request->product_id);
         if ($request->quantity < $product->minimal_safe_stock) {
-            $pushNotificationService->sendNotification(
+            $this->pushNotificationService->sendNotification(
                 'Alerta de stock bajo',
                 "Quedan '{$product->queantity}' existencias del producto '{$product->name}' !",
                 ['product_id' => $product->id]
             );
-        }  
-      
+        }
+
         $user->products()->updateExistingPivot($product->id, ['quantity' => $request->quantity]);
         return response()->json(['message' => 'Cantidad del producto actualizada.'], 200);
     }
 
     private function sendProductLowStockNotification($product)
     {
-
         $firebase = (new Factory)->withServiceAccount(__DIR__ . '/../../../../config/firebase_config.json');
-
         $messaging = $firebase->createMessaging();
-
         $message = CloudMessage::withTarget('token', env('FIREBASE_TOKEN'))
             ->withNotification([
                 'title' => 'Alerta de stock bajo',
