@@ -13,19 +13,9 @@ class RolesSeeder extends Seeder
      */
     public function run(): void
     {
-        $ownerRole = Role::create([
-            "name" => "Dueño de Empresa",
-            "description" => "Enterprise Owner",
-        ]);
-
-        $adminRole = Role::create([
-            "name" => "Co-Administrador",
-            "description" => "Administrator",
-        ]);
-
-        $inventoryAdminRole = Role::create([
-            "name" => "Administrador de Inventario",
-            "description" => "Seller",
+        $baseEmployeeRole = Role::create([
+            "name" => "Empleado Base",
+            "description" => "User",
         ]);
 
         $salesManRole = Role::create([
@@ -33,9 +23,19 @@ class RolesSeeder extends Seeder
             "description" => "Seller",
         ]);
 
-        $baseEmployeeRole = Role::create([
-            "name" => "Empleado Base",
-            "description" => "User",
+        $inventoryAdminRole = Role::create([
+            "name" => "Administrador de Inventario",
+            "description" => "Seller",
+        ]);
+
+        $adminRole = Role::create([
+            "name" => "Co-Administrador",
+            "description" => "Administrator",
+        ]);
+
+        $ownerRole = Role::create([
+            "name" => "Dueño de Empresa",
+            "description" => "Enterprise Owner",
         ]);
 
         // Set permissions to roles
