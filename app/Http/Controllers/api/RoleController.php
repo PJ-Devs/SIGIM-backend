@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Role;
+use App\Http\Resources\RoleCollection;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -13,7 +14,10 @@ class RoleController extends Controller
      */
     public function index()
     {
-        //
+
+        $roles = Role::orderBy('id', 'desc');
+
+        return new RoleCollection($roles->get());
     }
 
     /**

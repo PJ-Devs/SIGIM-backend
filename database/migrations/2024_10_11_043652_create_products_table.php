@@ -38,9 +38,10 @@ return new class extends Migration {
         ->onDelete("restrict");
       $table
         ->foreignId("supplier_id")
+        ->nullable()
         ->constrained()
         ->onUpdate("cascade")
-        ->onDelete("restrict");
+        ->onDelete("set null");
       $table->timestamps();
     });
   }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use Illuminate\Routing\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +22,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::orderBy('id', 'desc');
+
+        return new UserCollection($users->get());
+    }
+
+
+    public function enterpriseUsers(Request $request)
+    {
+        $enterpriseId = $request->user()->enterprise_id;
+        $users = User::where('enterprise_id', $enterpriseId)
+            ->orderBy('id', 'desc');
+
+        return new UserCollection($users->get());
     }
 
     /**

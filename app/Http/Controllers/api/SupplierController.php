@@ -52,8 +52,9 @@ class SupplierController extends Controller {
     * Remove the specified resource from storage.
     */
 
-    public function destroy( Supplier $supplier ) {
+    public function destroy(Request $request, Supplier $supplier)
+    {
         $supplier->delete();
-        return response( null, 204 );
+        return response()->json(null, 204);
     }
 }
