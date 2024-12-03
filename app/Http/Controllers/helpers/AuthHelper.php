@@ -35,7 +35,7 @@ class AuthHelper
           'email' => $request->owner_email,
           'password' => Hash::make($request->owner_password),
           'enterprise_id' => $enterprise->id,
-          'role_id' => 1,
+          'role_id' => 5,
         ]);
 
         return [$enterprise, $enterprise_owner];
@@ -53,7 +53,7 @@ class AuthHelper
       try {
         // Crear los colaboradores
         $created_colaborators = [];
-        
+
         if (is_array($request->colaborators)) {
           foreach ($request->colaborators as $colaboratorData) {
             $temp_password = $this->generateRandomPassword();
