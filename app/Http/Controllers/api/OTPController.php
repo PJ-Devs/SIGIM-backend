@@ -9,9 +9,6 @@ use App\Models\User;
 use App\Services\OTPService;
 use App\Services\MailingService;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Mail;
-
-use function Laravel\Prompts\error;
 
 class OTPController extends Controller
 {
@@ -25,21 +22,24 @@ class OTPController extends Controller
     }
 
     /**
-     * Generate an OTP to reset the user's password.
+     * Generate a One-Time Password (OTP) for password reset.
+     *
+     * @param PostPasswordResetOTPRequest $request The request object containing necessary data for generating the OTP.
+     * @return \Illuminate\Http\JsonResponse The response containing the generated OTP or an error message.
      */
     public function generatePasswordResetOTP(PostPasswordResetOTPRequest $request)
     {
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'No se encontró un usuario con el correo proporcionado.',
             ], 404);
         }
 
         $otp = $this->OTPService->generateOTP($user->email);
         if (!$otp || !$otp->status) {
             return response()->json([
-                'message' => 'An error occurred while generating the OTP.',
+                'message' => 'Ocurrió un error al generar el código OTP. Inténtalo de nuevo más tarde.',
             ], 500);
         }
 
@@ -49,26 +49,28 @@ class OTPController extends Controller
         );
 
         return response()->json([
-            'message' => 'An OTP was sent to your email.',
+            'message' => 'Se ha enviado un código OTP a tu correo electrónico.',
         ], 200);
     }
 
-
     /**
-     * Verify the OTP to reset the user's password.
+     * Verify the OTP (One-Time Password) for password reset.
+     *
+     * @param \App\Http\Requests\VerifyOTPRequest $request The request object containing the OTP and other necessary data.
+     * @return \Illuminate\Http\JsonResponse The response indicating the result of the OTP verification.
      */
     public function verifyPasswordResetOT(VerifyOTPRequest $request)
     {
         $user = User::where('email', $request->email)->first();
         if (!$user) {
             return response()->json([
-                'message' => 'User not found',
+                'message' => 'No se encontró un usuario con el correo proporcionado.',
             ], 404);
         }
 
         if ($user->is_is_first_login) {
             return response()->json([
-                'message' => 'This user is not allowed to reset his passwords yet.',
+                'message' => 'Este usuario no tiene permitido restablecer su contraseña en este momento.',
             ], 400);
         }
 
@@ -87,6 +89,7 @@ class OTPController extends Controller
         return response()->json([
             'reset_password_token' => $reset_password_token,
             'valid' => true,
+            'message' => 'El código OTP es válido. Aquí tienes tu token para restablecer la contraseña.',
         ], 200);
     }
 }

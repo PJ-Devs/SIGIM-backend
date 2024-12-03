@@ -1,6 +1,7 @@
 <?php
 
 namespace Database\Seeders;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Product;
@@ -12,12 +13,5 @@ class ProductsSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
-        
- 
-     
-     
-       
-    }
+    public function run(): void {}
 }

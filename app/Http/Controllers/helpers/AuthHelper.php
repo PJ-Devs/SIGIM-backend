@@ -14,6 +14,10 @@ class AuthHelper
 {
   /**
    * Register a new entterprise, including the fisrt instance information as owner and a set colaborators.
+   * Processes the sign-up transaction.
+   *
+   * @param SignUpRequest $request The request object containing sign-up details.
+   * @return void
    */
   public function processSignUpTransaction(SignUpRequest $request)
   {
@@ -47,9 +51,6 @@ class AuthHelper
   {
     return DB::transaction(function () use ($request, $enterprise) {
       try {
-        echo  json_encode($request->colaborators) ;
-        echo  json_encode($request) ;
-
         // Crear los colaboradores
         $created_colaborators = [];
         
@@ -57,6 +58,7 @@ class AuthHelper
           foreach ($request->colaborators as $colaboratorData) {
             $temp_password = $this->generateRandomPassword();
 
+            // Create the colaborator inccluding a random password and the role
             $colaborator = User::create([
               'name' => $colaboratorData['name'],
               'email' => $colaboratorData['email'],
@@ -81,9 +83,11 @@ class AuthHelper
     });
   }
 
-
   /**
-   * Generate a random alphanumeric password that includes at least one special character.
+   * Generate a random password.
+   *
+   * @param integer $length The length of the password.
+   * @return string The generated password.
    */
   private function generateRandomPassword($length = 16)
   {

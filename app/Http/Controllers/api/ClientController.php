@@ -22,7 +22,7 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $client = Client::create($request->all());
-return response()->json(['data' => $client], 201);
+        return response()->json(['data' => $client], 201);
     }
 
     /**
@@ -47,6 +47,6 @@ return response()->json(['data' => $client], 201);
     public function destroy(Client $client)
     {
         $client->delete();
-        return response( null, 204 );
+        return response(null, 204);
     }
 }

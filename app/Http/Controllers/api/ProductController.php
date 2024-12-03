@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\helpers\RoleAuthorizationHelper;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Http\Resources\ProductCollection;
@@ -15,21 +16,27 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    protected $roleAuthorizationHelper;
 
     public function __construct()
     {
         $this->middleware('auth:sanctum');
+        $this->roleAuthorizationHelper = new RoleAuthorizationHelper();
     }
-
 
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $enterpriseId = $request->user()->enterprise_id;
-        // where('enterprise_id', $enterpriseId)
-        $products = Product::where('status', 'available')
+        $user = $request->user();
+        $enterpriseId = $user->enterprise_id;
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'product.read')) {
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
+        }
+
+        $products = Product::where('enterprise_id', $enterpriseId)
+            ->where('status', '!=', 'deleted')
             ->orderBy('is_favorite', 'desc')
             ->orderBy('id', 'desc');
 
@@ -41,32 +48,45 @@ class ProductController extends Controller
             });
         }
 
-        return new ProductCollection($products->paginate(20));
+        if ($request->query('status')) {
+            switch ($request->query('status')) {
+                case 'available':
+                    $products->where('status', 'available');
+                    break;
+                case 'unavailable':
+                    $products->where('status', 'unavailable');
+                    break;
+                case 'low_stock':
+                    $products->whereColumn('stock', '<=', 'minimal_safe_stock');
+                    break;
+                case 'out_of_stock':
+                    $products->whereColumn('stock', '=', '0');
+                    break;
+            }
+        }
+
+        if ($request->query('categor')) {
+            $products->where('category_id', $request->query('category'));
+        }
+
+        return new ProductCollection($products->paginate(10));
     }
-
-
-    public function indexLowStock(Request $request)
-    {
-        $enterpriseId = $request->user()->enterprise_id;
-        // where('enterprise_id', $enterpriseId)
-        $products = Product::where('status', 'available')
-            ->whereColumn('stock', '<=', 'minimal_safe_stock')
-            ->orderBy('stock', 'asc');
-
-        return new ProductCollection($products->get());
-    }
-
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(ProductStoreRequest $request)
     {
-        $enterpriseId = $request->user()->enterprise_id;
+        $user = $request->user();
+        $enterpriseId = $user->enterprise_id;
 
         $category = Category::find($request->category_id);
         if ($category->enterprise_id != $enterpriseId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
+        }
+
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'product.create')) {
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
         }
 
         $product = Product::create([
@@ -93,49 +113,72 @@ class ProductController extends Controller
         return response()->json(['data' => new ProductResource($product)], 201);
     }
 
-
     /**
      * Display the specified resource.
      */
     public function show(Request $request, Product $product)
     {
-        $enterpriseId = $request->user()->enterprise_id;
-        // if ($product->enterprise_id != $enterpriseId) {
-        //     return response()->json(['message' => 'Unauthorized'], 401);
-        // }
+        $user = $request->user();
+        $enterpriseId = $user->enterprise_id;
+        if ($product->enterprise_id != $enterpriseId) {
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
+        }
+
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'product.read')) {
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
+        }
 
         return response()->json([
             'data' => new ProductResource($product)
         ], 200);
     }
 
-
     /**
      * Update the specified resource in storage.
      */
     public function update(ProductUpdateRequest $request, Product $product)
     {
-        $enterpriseId = $request->user()->enterprise_id;
+        $user = $request->user();
+        $enterpriseId = $user->enterprise_id;
         if ($product->enterprise_id !== $enterpriseId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
         }
+
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'product.update')) {
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
+        }
+
+        if ($product->status !== 'available') {
+            if (!$request->status) {
+                return response()->json(['message' => 'Un producto que no está disponible no puede ser actualizado.'], 400);
+            }
+
+            $product->update(['status' => $request->status]);
+            return response()->json(['data' => new ProductResource($product)], 200);
+        }
+
+        $updateData = $request->except('thumbnail', 'stock_change', 'added_stock', 'stock');
 
         DB::beginTransaction();
         try {
             $stockChange = $request->stock_change;
             $isAddedStock = $request->added_stock; // true if added, false if decreased
+            $newStock = $request->stock;
 
-            if ($isAddedStock) {
-                $product->stock += $stockChange;
-            } else {
-                if ($product->stock < $stockChange) {
-                    return response()->json(['error' => 'Not enough stock'], 400);
+            if (!$newStock) {
+                if ($isAddedStock) {
+                    $product->stock += $stockChange;
+                } else {
+                    if ($product->stock < $stockChange) {
+                        return response()->json(['message' => 'No hay suficiente stock'], 400);
+                    }
+                    $product->stock -= $stockChange;
                 }
-                $product->stock -= $stockChange;
-            }
 
-            $updateData = $request->except('thumbnail', 'stock_change', 'added_stock');
-            $updateData['stock'] = $product->stock;
+                $updateData['stock'] = $product->stock;
+            } else {
+                $updateData['stock'] = $newStock;
+            }
 
             if ($request->hasFile('thumbnail')) {
                 $img = $request->file('thumbnail');
@@ -150,20 +193,23 @@ class ProductController extends Controller
             return response()->json(['data' => new ProductResource($product)], 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['error' => 'Failed to update product'], 500);
+            return response()->json(['message' => 'No se pudo actualizar el producto'], 500);
         }
     }
-
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Request $request, Product $product)
     {
-        $enterpriseId = $request->user()->enterprise_id;
-
+        $user = $request->user();
+        $enterpriseId = $user->enterprise_id;
         if ($product->enterprise_id != $enterpriseId) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
+        }
+
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'product.delete')) {
+            return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
         }
 
         $product->update(['status' => 'deleted']);

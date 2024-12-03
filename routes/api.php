@@ -16,7 +16,7 @@ use App\Http\Controllers\api\{
     UserController,
     OTPController,
     CartController,
-    PushNotificationController 
+    PushNotificationController,
 };
 
 Route::get('/send-notification', [PushNotificationController::class, 'sendPushNotification']);
@@ -59,9 +59,24 @@ Route::get('/profile', [UserController::class, 'showProfile']);
 Route::put('/profile', [UserController::class, 'updateProfile']);
 Route::get('/enterprise', [UserController::class, 'getMyEnterprise']);
 
-Route::get('/products/low-stock', [ProductController::class, 'indexLowStock'])->name('products.low-stock');
+/**
+ * ProductController routes
+ * 1. index - GET /products
+ * 2. show - GET /products/{id}
+ * 3. store - POST /products
+ * 4. update - PUT /products/{id}
+ * 5. destroy - DELETE /products/{id}
+ */
 Route::apiResource('/products', ProductController::class);
 
+/**
+ * EnterpriseController routes
+ * 1. index - GET /enterprises
+ * 2. show - GET /enterprises/{id}
+ * 3. store - POST /enterprises
+ * 4. update - PUT /enterprises/{id}
+ * 5. destroy - DELETE /enterprises/{id}
+ */
 Route::apiResource('enterprises', EnterpriseController::class);
 
 Route::apiResource('permissions', PermissionController::class);
@@ -80,12 +95,10 @@ Route::apiResource('suppliers', SupplierController::class);
  * 5. concludeSale - POST /cart/conclude-sale
  * 6. cleanProducts - POST /cart/clean-products
  */
-
 Route::post('/cart/attach-product', [CartController::class, 'attachProduct']);
 Route::post('/cart/detach-product', [CartController::class, 'detachProduct']);
 Route::get('/cart/products', [CartController::class, 'getProducts']);
 Route::post('/cart/update-product-quantity', [CartController::class, 'updateProductQuantity']);
 Route::post('/cart/clean-products', [CartController::class, 'cleanProducts']);
 Route::post('/cart/conclude-sale', [CartController::class, 'concludeSale']);
-
 Route::get('/invoices/get-invoices', [InvoiceController::class, 'getInvoices']);

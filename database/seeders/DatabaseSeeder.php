@@ -4,12 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Enterprise;
-use App\Models\Role;
+use App\Models\Product;
 use App\Models\Supplier;
 use App\Models\Client;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Product;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +17,12 @@ class DatabaseSeeder extends Seeder
    */
   public function run(): void
   {
+    $this->call([
+      PermissionsSeeder::class,
+      RolesSeeder::class,
+    ]);
+
+    // ----------------------------
 
     $enterprise = Enterprise::create([
       "name" => "Enterprise 1",
@@ -26,29 +31,48 @@ class DatabaseSeeder extends Seeder
       "phone_number" => "nosee",
     ]);
 
-    Role::create([
-      "name" => "Dueño de Empresa",
-      "description" => "Enterprise Owner",
-    ]);
-
-    Role::create([
-      "name" => "Administrador",
-      "description" => "Administrator",
-    ]);
-
-    Role::create([
-      "name" => "Empleado",
-      "description" => "User",
-    ]);
-
-    $user = $enterprise->users()->create([
+    $ownerUser = $enterprise->users()->create([
       "name" => "Pedro Osorio",
       "email" => "pedroo@gmail.com",
+      "password" => bcrypt("12345678"),
+      "role_id" => 1,
+    ]);
+
+    $adminUser = $enterprise->users()->create([
+      "name" => "Marina Guzman",
+      "email" => "marinitagz@gmail.com",
       "password" => bcrypt("12345678"),
       "role_id" => 2,
     ]);
 
-    error_log("Test token: " . $user->createToken("api_token")->plainTextToken);
+    $inventoryUser = $enterprise->users()->create([
+      "name" => "Roberto Carlos",
+      "email" => "robertico@gmail.com",
+      "password" => bcrypt("12345678"),
+      "role_id" => 3,
+    ]);
+
+    $adminUser = $enterprise->users()->create([
+      "name" => "Andrea Giraldo",
+      "email" => "andreeehg@gmail.com",
+      "password" => bcrypt("12345678"),
+      "role_id" => 4,
+    ]);
+
+    $baseUser = $enterprise->users()->create([
+      "name" => "Juan Perez",
+      "email" => "juanperez121@gmail.com",
+      "password" => bcrypt("12345678"),
+      "role_id" => 5,
+    ]);
+
+    error_log("Owner Role test token: " . $ownerUser->createToken("api_token")->plainTextToken);
+    error_log("Admin Role test token: " . $adminUser->createToken("api_token")->plainTextToken);
+    error_log("Inventory Role test token: " . $inventoryUser->createToken("api_token")->plainTextToken);
+    error_log("Sales Role test token: " . $adminUser->createToken("api_token")->plainTextToken);
+    error_log("Base Role test token: " . $baseUser->createToken("api_token")->plainTextToken);
+
+    // ----------------------------
 
     Category::create([
       "name" => "Telefonos",
@@ -80,12 +104,16 @@ class DatabaseSeeder extends Seeder
       'enterprise_id' => $enterprise->id,
     ]);
 
+    // ----------------------------
+
     Supplier::create([
       "name" => "nose",
       "email" => "tampocose",
       "phone_number" => "tampocose",
       "NIT" => "nose",
     ]);
+
+    // ----------------------------
 
     Product::create([
       'name' => 'Apple iPhone 14',

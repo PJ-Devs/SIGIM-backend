@@ -2,59 +2,119 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\helpers\RoleAuthorizationHelper;
+use Illuminate\Routing\Controller;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 
+class SupplierController extends Controller
+{
+    protected $roleAuthorizationHelper;
 
-class SupplierController extends Controller {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->roleAuthorizationHelper = new RoleAuthorizationHelper();
+    }
+
     /**
-    * Display a listing of the resource.
-    */
+     * Muestra una lista de proveedores.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'supplier.read')) {
+            return response()->json([
+                'message' => 'No estás autorizado para realizar esta acción.'
+            ], 401);
+        }
 
-    public function index() {
         $suppliers = Supplier::all();
         return response()->json(['data' => $suppliers], 200);
     }
 
     /**
-    * Store a newly created resource in storage.
-    */
+     * Almacena un nuevo proveedor en el sistema.
+     *
+     * @param  \App\Http\Requests\StoreSupplierRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreSupplierRequest $request)
+    {
+        $user = $request->user();
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'supplier.create')) {
+            return response()->json([
+                'message' => 'No estás autorizado para realizar esta acción.'
+            ], 401);
+        }
 
-    public function store( StoreSupplierRequest $request ) {
-        $supplier = Supplier::create( $request->all() );
+        $supplier = Supplier::create($request->all());
         return response()->json(['data' => $supplier], 201);
     }
 
     /**
-    * Display the specified resource.
-    */
+     * Muestra un proveedor específico.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, string $id)
+    {
+        $user = $request->user();
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'supplier.read')) {
+            return response()->json([
+                'message' => 'No estás autorizado para realizar esta acción.'
+            ], 401);
+        }
 
-    public function show(string $id) {
         $supplier = Supplier::find($id);
         return response()->json(['data' => $supplier], 200);
     }
 
     /**
-    * Update the specified resource in storage.
-    */
+     * Actualiza un proveedor existente en el sistema.
+     *
+     * @param  \App\Http\Requests\UpdateSupplierRequest  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateSupplierRequest $request, string $id)
+    {
+        $user = $request->user();
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'supplier.update')) {
+            return response()->json([
+                'message' => 'No estás autorizado para realizar esta acción.'
+            ], 401);
+        }
 
-    public function update( UpdateSupplierRequest $request, string $id ) {
         $supplier = Supplier::find($id);
         $supplier->update($request->all());
         return response()->json(['data' => $supplier], 200);
-        
     }
 
     /**
-    * Remove the specified resource from storage.
-    */
-
+     * Elimina un proveedor del sistema.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Supplier  $supplier
+     * @return \Illuminate\Http\Response
+     */
     public function destroy(Request $request, Supplier $supplier)
     {
+        $user = $request->user();
+        if (!$this->roleAuthorizationHelper->hasPermission($user->role, 'supplier.delete')) {
+            return response()->json([
+                'message' => 'No estás autorizado para realizar esta acción.'
+            ], 401);
+        }
+
         $supplier->delete();
-        return response()->json(null, 204);
+        return response(null, 204);
     }
 }
