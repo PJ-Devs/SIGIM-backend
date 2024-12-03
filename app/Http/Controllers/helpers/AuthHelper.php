@@ -35,7 +35,7 @@ class AuthHelper
           'email' => $request->owner_email,
           'password' => Hash::make($request->owner_password),
           'enterprise_id' => $enterprise->id,
-          'role_id' => 1,
+          'role_id' => 5,
         ]);
 
         return [$enterprise, $enterprise_owner];
