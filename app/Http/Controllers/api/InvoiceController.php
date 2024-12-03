@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Routing\Controller;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
 
 class InvoiceController extends Controller {
+
+    public function __construct() {
+        $this->middleware( 'auth:sanctum' );
+    }
+
     /**
     * Display a listing of the resource.
     */
 
     public function index() {
-        //
     }
 
     /**
@@ -28,8 +32,9 @@ class InvoiceController extends Controller {
     * Display the specified resource.
     */
 
-    public function show( Invoice $product ) {
-        //
+    public function show( string $id ) {
+        $invoice = Invoice::find( $id );
+        return response()->json( [ 'data' => $invoice ], 200 );
     }
 
     /**
@@ -45,8 +50,14 @@ class InvoiceController extends Controller {
     * Remove the specified resource from storage.
     */
 
-    public function destroy( Invoice $product ) {
+    public function destroy( string $id ) {
         $product->delete();
         return response( null, 204 );
+    }
+
+    public function getInvoices(Request $request) {
+        $user = $request->user();
+        $invoices = $user->invoices;
+        return response()->json(['data' => $invoices], 200);
     }
 }

@@ -14,7 +14,9 @@ class Invoice extends Model
     
     protected $fillable = [
         'payment_method',
+        'user_id',
         'total_price',
+        'client_id'
     ];
 
     public function client():BelongsTo
@@ -25,5 +27,10 @@ class Invoice extends Model
     public function sales():HasMany
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function user():BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
