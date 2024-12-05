@@ -4,8 +4,33 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
     use HasFactory;
+
+    
+    protected $fillable = [
+        'payment_method',
+        'user_id',
+        'total_price',
+        'client_id'
+    ];
+
+    public function client():BelongsTo
+    {
+        return $this->belongsTo(Client::class);
+    }
+
+    public function sales():HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function user():BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class ProductUpdateRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'name' => 'string|max:255',
+            'description' => 'string|max:255',
+            'stock_change' => 'numeric|min:1',
+            'added_stock' => 'boolean',
+            'stock' => 'numeric|min:0',
+            'status' => 'string|in:available,unavailable,deleted',
+            'sale_price' => 'numeric|min:0',
+            'supplier_price' => 'numeric|min:0',
+            'minimal_safe_stock' => 'numeric|min:1',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // 2MB
+            'is_favorite' => 'boolean',
+            'category_id' => 'exists:categories,id',
+        ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if ($this->sale_price < $this->supplier_price) {
+                $validator->errors()->add('sale_price', 'Sale price must be greater than or equal to supplier price');
+            } else if ($this->added_stock && $this->decreased_stock) {
+                $validator->errors()->add('added_stock', 'You can only add or decrease stock');
+            }
+        });
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.string' => 'Name must be a string',
+            'name.max' => 'Name may not be greater than 255 characters',
+            'description.string' => 'Description must be a string',
+            'description.max' => 'Description may not be greater than 255 characters',
+            'stock_change.numeric' => 'Stock change must be a number',
+            'stock_change.min' => 'Stock change must be greater than or equal to 1',
+            'added_stock.boolean' => 'Added stock must be a boolean',
+            'stock.numeric' => 'Stock must be a number',
+            'stock.min' => 'Stock must be greater than or equal to 0',
+            'sale_price.numeric' => 'Sale price must be a decimal',
+            'sale_price.min' => 'Sale price must be greater than or equal to 0',
+            'supplier_price.numeric' => 'Supplier price must be a decimal',
+            'supplier_price.min' => 'Supplier price must be greater than or equal to 0',
+            'minimal_safe_stock.numeric' => 'Minimal safe stock must be a number',
+            'minimal_safe_stock.min' => 'Minimal safe stock must be greater than or equal to 1',
+            'thumbnail.image' => 'Thumbnail must be an image',
+            'thumbnail.mimes' => 'Thumbnail must be a file of type: jpeg, png, jpg',
+            'thumbnail.max' => 'Thumbnail may not be greater than 2048 kilobytes',
+            'is_favorite.boolean' => 'Is favorite must be a boolean',
+            'category_id.exists' => 'Category does not exist',
+        ];
+    }
+}

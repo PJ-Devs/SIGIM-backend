@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->enum('payment_method', ['cash', 'debit', 'credit', 'transferency'])->nullable();
+            $table->string('user_id', 26);
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->nullable();
             $table->double('total_price')->default(0);
+            $table->foreignId('client_id')->constrained()->onUpdate('cascade')->onDelete('restrict')->default(1)->nullable();
             $table->timestamps();
         });
     }
