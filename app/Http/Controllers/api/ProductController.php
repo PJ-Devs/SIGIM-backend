@@ -107,9 +107,9 @@ class ProductController extends Controller
         if ($request->hasFile('thumbnail')) {
             $img = $request->file('thumbnail');
             $fileName = uniqid($product->id, false) . '.' . $img->getClientOriginalExtension();
-            $imgPath = 'product_thumbnails/' . $fileName;
+            $imgPath = 'public/product_thumbnails/' . $fileName;
             Storage::put($imgPath, file_get_contents($img));
-            $product->update(['thumbnail' => $imgPath]);
+            $product->update(['thumbnail' => "storage/product_thumbnails/" . $fileName]);
         }
 
         return response()->json(['data' => new ProductResource($product)], 201);
@@ -150,15 +150,6 @@ class ProductController extends Controller
             return response()->json(['message' => 'No estás autorizado para realizar esta acción.'], 401);
         }
 
-        if ($product->status !== 'available') {
-            if (!$request->status) {
-                return response()->json(['message' => 'Un producto que no está disponible no puede ser actualizado.'], 400);
-            }
-
-            $product->update(['status' => $request->status]);
-            return response()->json(['data' => new ProductResource($product)], 200);
-        }
-
         $updateData = $request->except('thumbnail', 'stock_change', 'added_stock', 'stock');
 
         DB::beginTransaction();
@@ -185,11 +176,17 @@ class ProductController extends Controller
             }
 
             if ($request->hasFile('thumbnail')) {
+                // Eliminar el archivo existente si lo hay
+                if ($product->thumbnail && Storage::exists(str_replace('storage/', 'public/', $product->thumbnail))) {
+                    Storage::delete(str_replace('storage/', 'public/', $product->thumbnail));
+                }
+
+                // Guardar el nuevo archivo
                 $img = $request->file('thumbnail');
                 $fileName = uniqid($product->id, false) . '.' . $img->getClientOriginalExtension();
-                $imgPath = 'product_thumbnails/' . $fileName;
+                $imgPath = 'public/product_thumbnails/' . $fileName;
                 Storage::put($imgPath, file_get_contents($img));
-                $updateData['thumbnail'] = $imgPath;
+                $updateData['thumbnail'] = "storage/product_thumbnails/" . $fileName;
             }
 
             $product->update($updateData);

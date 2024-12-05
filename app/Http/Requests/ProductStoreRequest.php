@@ -27,7 +27,7 @@ class ProductStoreRequest extends FormRequest
             'supplier_price' => 'required|numeric|min:0',
             'minimal_safe_stock' => 'required|numeric|min:1',
             'discount' => 'nullable|numeric|min:0|max:1',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg',
             'category_id' => 'required|exists:categories,id',
             'supplier_id' => 'required|exists:suppliers,id',
         ];
@@ -68,6 +68,10 @@ class ProductStoreRequest extends FormRequest
             'minimal_safe_stock.required' => 'Minimal safe stock is required',
             'minimal_safe_stock.numeric' => 'Minimal safe stock must be a number',
             'minimal_safe_stock.min' => 'Minimal safe stock must be at least 1',
+            'thumbnail.image' => 'Image must be an image',
+            'thumbnail.mimes' => 'Image must be a jpeg, png, or jpg file',
+            'category_id.exists' => 'Category not found',
+            'supplier_id.required' => 'Supplier is required',
         ];
     }
 }

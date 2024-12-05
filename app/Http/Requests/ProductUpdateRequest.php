@@ -31,9 +31,10 @@ class ProductUpdateRequest extends FormRequest
             'sale_price' => 'numeric|min:0',
             'supplier_price' => 'numeric|min:0',
             'minimal_safe_stock' => 'numeric|min:1',
-            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // 2MB
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg',
             'is_favorite' => 'boolean',
             'category_id' => 'exists:categories,id',
+            'supplier_id' => 'exists:suppliers,id',
         ];
     }
 
@@ -76,6 +77,7 @@ class ProductUpdateRequest extends FormRequest
             'thumbnail.max' => 'Thumbnail may not be greater than 2048 kilobytes',
             'is_favorite.boolean' => 'Is favorite must be a boolean',
             'category_id.exists' => 'Category does not exist',
+            'supplier_id.exists' => 'Supplier does not exist',
         ];
     }
 }
