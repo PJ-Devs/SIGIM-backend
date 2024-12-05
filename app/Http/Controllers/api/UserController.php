@@ -10,6 +10,8 @@ use App\Http\Resources\UserCollection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -68,6 +70,8 @@ class UserController extends Controller
     public function updateProfile(UpdateUserRequest $request)
     {
         $user = User::find(Auth::user()->id);
+
+        
         if (!$user) {
             return response()->json([
                 'message' => 'Usuario no encontrado.'
@@ -80,7 +84,7 @@ class UserController extends Controller
             ], 401);
         }
 
-        $user->update($request->validated());
+        $user->update($request->all());
 
         return response()->json([
             'data' => UserResource::make($user)
